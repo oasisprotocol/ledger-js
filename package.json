@@ -1,0 +1,80 @@
+{
+  "name": "ledger-oasis-js",
+  "version": "0.0.0",
+  "description": "Node API for Oasis App (Ledger Nano S/X)",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zondax/ledger-oasis-js.git"
+  },
+  "keywords": [
+    "Ledger",
+    "Javascript",
+    "Oasis"
+  ],
+  "author": "ZondaX GmbH",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/zondax/ledger-oasis-js/issues"
+  },
+  "homepage": "https://github.com/zondax/ledger-oasis-js",
+  "dependencies": {
+    "@babel/runtime": "^7.7.4",
+    "@ledgerhq/hw-transport": "^4.74.2",
+    "bech32": "^1.1.3"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.7.4",
+    "@babel/core": "^7.7.4",
+    "@babel/node": "^7.7.4",
+    "@babel/plugin-transform-runtime": "^7.7.4",
+    "@babel/preset-env": "^7.7.4",
+    "@ledgerhq/hw-transport-node-hid": "^4.74.2",
+    "@ledgerhq/hw-transport-webusb": "^4.74.2",
+    "@ledgerhq/logs": "^4.72.0",
+    "@vue/cli-plugin-babel": "^4.0.5",
+    "@vue/cli-plugin-eslint": "^4.0.5",
+    "@vue/cli-service": "^4.0.5",
+    "babel-eslint": "^10.0.3",
+    "babel-jest": "^24.9.0",
+    "bip32": "2.0.4",
+    "bip39": "3.0.2",
+    "core-js": "^3.4.3",
+    "crypto-js": "3.1.9-1",
+    "ed25519-supercop": "^1.2.0",
+    "eslint": "^6.7.1",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-config-prettier": "^6.7.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-jest": "^23.0.4",
+    "eslint-plugin-prettier": "^3.1.1",
+    "eslint-plugin-vue": "^6.0.1",
+    "index.js": "^0.0.3",
+    "jest": "^24.9.0",
+    "jest-serial-runner": "^1.1.0",
+    "prettier": "^1.19.1",
+    "vue": "^2.6.10",
+    "vue-template-compiler": "^2.6.10"
+  },
+  "scripts": {
+    "build": "babel src --out-dir dist",
+    "certificate": "openssl req -nodes -new -x509 -keyout certs/server.key -out certs/server.cert; openssl x509 -in certs/server.cert -out certs/cert.pem -outform PEM",
+    "test:unit": "jest -c jest.config.unit.js",
+    "test:integration": "jest -c jest.config.integration.js --runInBand --detectOpenHandles",
+    "serve": "vue-cli-service serve vue_example/main.js"
+  },
+  "moduleDirectories": [
+    "node_modules",
+    "dist"
+  ],
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions"
+  ]
+}
