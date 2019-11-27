@@ -28,7 +28,7 @@ jobs:
       - run: sudo apt-get update -y && sudo apt-get install -y libusb-1.0.0 libudev-dev
       - checkout
       - run: yarn install
-      - run: yarn build:ci
+      - run: yarn build
       - run:
           name: prepare authentication config
           command: echo "//registry.npmjs.org/:_authToken=$npm_TOKEN" > ~/repo/.npmrc
