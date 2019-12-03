@@ -198,13 +198,13 @@ export default {
       this.log(`Device Locked: ${response.device_locked}`);
       this.log(`Test mode: ${response.test_mode}`);
 
-      // now it is possible to access all commands in the app
+      const context = "oasis-core/consensus: tx for chain testing";
       const message = Buffer.from(
         "pGNmZWWiY2dhcwBmYW1vdW50QGRib2R5omd4ZmVyX3RvWCBkNhaFWEyIEubmS3EVtRLTanD3U+vDV5fke4Obyq" +
           "83CWt4ZmVyX3Rva2Vuc0Blbm9uY2UAZm1ldGhvZHBzdGFraW5nLlRyYW5zZmVy",
         "base64",
       );
-      response = await app.sign(path, message);
+      response = await app.sign(path, context, message);
 
       this.log("Response received!");
       this.log("Full response:");
