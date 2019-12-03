@@ -16,6 +16,11 @@ export const PAYLOAD_TYPE = {
   LAST: 0x02,
 };
 
+export const P1_VALUES = {
+  ONLY_RETRIEVE: 0x00,
+  SHOW_ADDRESS_IN_DEVICE: 0x01,
+};
+
 const ERROR_DESCRIPTION = {
   1: "U2F: Unknown",
   2: "U2F: Bad request",

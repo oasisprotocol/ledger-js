@@ -26,7 +26,23 @@ import {
   getVersion,
   processErrorResponse,
   DEFAULT_HRP,
+  P1_VALUES,
 } from "./common";
+
+function processGetAddrEd25519Response(response) {
+  const errorCodeData = response.slice(-2);
+  const returnCode = errorCodeData[0] * 256 + errorCodeData[1];
+
+  const pk = Buffer.from(response.slice(0, 32));
+  const bech32Address = Buffer.from(response.slice(32, -2)).toString();
+
+  return {
+    bech32_address: bech32Address,
+    pk,
+    return_code: returnCode,
+    error_message: errorCodeToString(returnCode),
+  };
+}
 
 export default class OasisApp {
   constructor(transport, scrambleKey = APP_KEY) {
@@ -63,13 +79,17 @@ export default class OasisApp {
     }
   }
 
-  async signGetChunks(path, message) {
-    const serializedPath = await this.serializePath(path);
-
+  async signGetChunks(path, context, message) {
     const chunks = [];
-    chunks.push(serializedPath);
-    const buffer = Buffer.from(message);
 
+    // First chunk
+    const serializedPath = await this.serializePath(path);
+    const contextSize = Buffer.from([context.length]);
+    const firstChunk = Buffer.concat([serializedPath, contextSize, Buffer.from(context)]);
+    chunks.push(firstChunk);
+
+    // Now split message into more chunks
+    const buffer = Buffer.from(message);
     for (let i = 0; i < buffer.length; i += CHUNK_SIZE) {
       let end = i + CHUNK_SIZE;
       if (i > buffer.length) {
@@ -187,40 +207,18 @@ export default class OasisApp {
     return publicKeyv1(this, serializedPath);
   }
 
-  async showAddressAndPubKey(path) {
-    const data = await this.serializePath(path);
-    return this.transport.send(CLA, INS.GET_ADDR_ED25519, 1, 0, data, [0x9000]).then(response => {
-      const errorCodeData = response.slice(-2);
-      const returnCode = errorCodeData[0] * 256 + errorCodeData[1];
-
-      const pk = Buffer.from(response.slice(0, 32));
-      const bech32Address = Buffer.from(response.slice(32, -2)).toString();
-
-      return {
-        bech32_address: bech32Address,
-        pk,
-        return_code: returnCode,
-        error_message: errorCodeToString(returnCode),
-      };
-    }, processErrorResponse);
-  }
-
   async getAddressAndPubKey(path) {
     const data = await this.serializePath(path);
-    return this.transport.send(CLA, INS.GET_ADDR_ED25519, 0, 0, data, [0x9000]).then(response => {
-      const errorCodeData = response.slice(-2);
-      const returnCode = errorCodeData[0] * 256 + errorCodeData[1];
+    return this.transport
+      .send(CLA, INS.GET_ADDR_ED25519, P1_VALUES.ONLY_RETRIEVE, 0, data, [0x9000])
+      .then(processGetAddrEd25519Response, processErrorResponse);
+  }
 
-      const pk = Buffer.from(response.slice(0, 32));
-      const bech32Address = Buffer.from(response.slice(32, -2)).toString();
-
-      return {
-        bech32_address: bech32Address,
-        pk,
-        return_code: returnCode,
-        error_message: errorCodeToString(returnCode),
-      };
-    }, processErrorResponse);
+  async showAddressAndPubKey(path) {
+    const data = await this.serializePath(path);
+    return this.transport
+      .send(CLA, INS.GET_ADDR_ED25519, P1_VALUES.SHOW_ADDRESS_IN_DEVICE, 0, data, [0x9000])
+      .then(processGetAddrEd25519Response, processErrorResponse);
   }
 
   async signSendChunk(chunkIdx, chunkNum, chunk) {
@@ -236,8 +234,8 @@ export default class OasisApp {
     }
   }
 
-  async sign(path, message) {
-    const chunks = await this.signGetChunks(path, message);
+  async sign(path, context, message) {
+    const chunks = await this.signGetChunks(path, context, message);
 
     return this.signSendChunk(1, chunks.length, chunks[0], [0x9000]).then(async response => {
       let result = {

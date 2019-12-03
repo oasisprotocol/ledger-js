@@ -5,7 +5,7 @@ import crypto from "crypto";
 
 const ed25519 = require("ed25519-supercop");
 
-const context = "oasis-core/consensus: tx for chain test-chain-id";
+const context = "oasis-core/consensus: tx for chain testing";
 
 test("get version", async () => {
   const transport = await TransportNodeHid.create(1000);
@@ -135,7 +135,7 @@ test("sign_and_verify", async () => {
   );
 
   const responsePk = await app.publicKey(path);
-  const responseSign = await app.sign(path, message);
+  const responseSign = await app.sign(path, context, message);
 
   console.log(responsePk);
   console.log(responseSign);
@@ -168,7 +168,7 @@ test("sign_invalid", async () => {
   );
   invalidMessage += "1";
 
-  const responseSign = await app.sign(path, invalidMessage);
+  const responseSign = await app.sign(path, context, invalidMessage);
 
   console.log(responseSign);
   expect(responseSign.return_code).toEqual(0x6984);
