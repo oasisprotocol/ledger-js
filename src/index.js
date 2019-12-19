@@ -79,17 +79,14 @@ export default class OasisApp {
     }
   }
 
-  async signGetChunks(path, context, message) {
+  static prepareChunks(serializedPathBuffer, contextBuffer, contextSizeBuffer, messageBuffer) {
     const chunks = [];
 
-    // First chunk
-    const serializedPath = await this.serializePath(path);
-    const contextSize = Buffer.from([context.length]);
-    const firstChunk = Buffer.concat([serializedPath, contextSize, Buffer.from(context)]);
-    chunks.push(firstChunk);
+    // First chunk (only path)
+    chunks.push(serializedPathBuffer);
 
-    // Now split message into more chunks
-    const buffer = Buffer.from(message);
+    // Now split context length + context + message into more chunks
+    const buffer = Buffer.concat([contextSizeBuffer, contextBuffer, messageBuffer]);
     for (let i = 0; i < buffer.length; i += CHUNK_SIZE) {
       let end = i + CHUNK_SIZE;
       if (i > buffer.length) {
@@ -99,6 +96,13 @@ export default class OasisApp {
     }
 
     return chunks;
+  }
+
+  async signGetChunks(path, context, message) {
+
+    const serializedPath = await this.serializePath(path);
+    return prepareChunks(serializedPath, Buffer.from(context), Buffer.from([context.length]), Buffer.from(message))
+
   }
 
   async getVersion() {
