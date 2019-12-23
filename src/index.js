@@ -79,17 +79,26 @@ export default class OasisApp {
     }
   }
 
-  async signGetChunks(path, context, message) {
+  static prepareChunks(serializedPathBuffer, context, message) {
     const chunks = [];
 
-    // First chunk
-    const serializedPath = await this.serializePath(path);
-    const contextSize = Buffer.from([context.length]);
-    const firstChunk = Buffer.concat([serializedPath, contextSize, Buffer.from(context)]);
-    chunks.push(firstChunk);
+    // First chunk (only path)
+    chunks.push(serializedPathBuffer);
 
-    // Now split message into more chunks
-    const buffer = Buffer.from(message);
+    const contextSizeBuffer = Buffer.from([context.length])
+    const contextBuffer = Buffer.from(context)
+    const messageBuffer = Buffer.from(message)
+
+    if (context.length > 255) {
+      throw new Error("Maximum supported context size is 255 bytes");
+    }
+
+    if (contextSizeBuffer.length > 1) {
+      throw new Error("Context size buffer should be exacty 1 byte");
+    }
+
+    // Now split context length + context + message into more chunks
+    const buffer = Buffer.concat([contextSizeBuffer, contextBuffer, messageBuffer]);
     for (let i = 0; i < buffer.length; i += CHUNK_SIZE) {
       let end = i + CHUNK_SIZE;
       if (i > buffer.length) {
@@ -99,6 +108,14 @@ export default class OasisApp {
     }
 
     return chunks;
+  }
+
+  async signGetChunks(path, context, message) {
+
+    const serializedPath = await this.serializePath(path);
+
+    return prepareChunks(serializedPath, context, message)
+
   }
 
   async getVersion() {
