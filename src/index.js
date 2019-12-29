@@ -113,7 +113,7 @@ export default class OasisApp {
   async signGetChunks(path, context, message) {
     const serializedPath = await this.serializePath(path);
 
-    return prepareChunks(serializedPath, context, message);
+    return OasisApp.prepareChunks(serializedPath, context, message);
   }
 
   async getVersion() {
