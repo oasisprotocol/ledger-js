@@ -13,10 +13,10 @@ test("check address conversion", async () => {
 test("check prepare chunks function", async () => {
   const serializedPath = serializePathv1([44, 123, 5, 0, 3]);
   const message = Buffer.from(
-      "pGNmZWWiY2dhcwBmYW1vdW50QGRib2R5omd4ZmVyX3RvWCBkNhaFWEyIEubmS3EVtRLTanD3U+vDV5fke4Obyq" +
-        "83CWt4ZmVyX3Rva2Vuc0Blbm9uY2UAZm1ldGhvZHBzdGFraW5nLlRyYW5zZmVy",
-      "base64",
-    );
+    "pGNmZWWiY2dhcwBmYW1vdW50QGRib2R5omd4ZmVyX3RvWCBkNhaFWEyIEubmS3EVtRLTanD3U+vDV5fke4Obyq" +
+      "83CWt4ZmVyX3Rva2Vuc0Blbm9uY2UAZm1ldGhvZHBzdGFraW5nLlRyYW5zZmVy",
+    "base64",
+  );
 
   const chunks = OasisApp.prepareChunks(serializedPath, context, message);
 
@@ -29,11 +29,11 @@ test("check prepare chunks function", async () => {
 test("Verify prepare chunk function with empty context", async () => {
   const serializedPath = serializePathv1([44, 123, 5, 0, 3]);
   const message = Buffer.from(
-      "pGNmZWWiY2dhcwBmYW1vdW50QGRib2R5omd4ZmVyX3RvWCBkNhaFWEyIEubmS3EVtRLTanD3U+vDV5fke4Obyq" +
-        "83CWt4ZmVyX3Rva2Vuc0Blbm9uY2UAZm1ldGhvZHBzdGFraW5nLlRyYW5zZmVy",
-      "base64",
-    );
-  const context = '';
+    "pGNmZWWiY2dhcwBmYW1vdW50QGRib2R5omd4ZmVyX3RvWCBkNhaFWEyIEubmS3EVtRLTanD3U+vDV5fke4Obyq" +
+      "83CWt4ZmVyX3Rva2Vuc0Blbm9uY2UAZm1ldGhvZHBzdGFraW5nLlRyYW5zZmVy",
+    "base64",
+  );
+  const context = "";
 
   const chunks = OasisApp.prepareChunks(serializedPath, context, message);
 
@@ -44,11 +44,11 @@ test("Verify prepare chunk function with empty context", async () => {
 test("Test prepareChunks with context bigger than 255 bytes", async () => {
   const serializedPath = serializePathv1([44, 123, 5, 0, 3]);
   const message = Buffer.from(
-      "pGNmZWWiY2dhcwBmYW1vdW50QGRib2R5omd4ZmVyX3RvWCBkNhaFWEyIEubmS3EVtRLTanD3U+vDV5fke4Obyq" +
-        "83CWt4ZmVyX3Rva2Vuc0Blbm9uY2UAZm1ldGhvZHBzdGFraW5nLlRyYW5zZmVy",
-      "base64",
-    );
-  const context = 'A'.repeat(256);
+    "pGNmZWWiY2dhcwBmYW1vdW50QGRib2R5omd4ZmVyX3RvWCBkNhaFWEyIEubmS3EVtRLTanD3U+vDV5fke4Obyq" +
+      "83CWt4ZmVyX3Rva2Vuc0Blbm9uY2UAZm1ldGhvZHBzdGFraW5nLlRyYW5zZmVy",
+    "base64",
+  );
+  const context = "A".repeat(256);
 
   try {
     const chunks = OasisApp.prepareChunks(serializedPath, context, message);
