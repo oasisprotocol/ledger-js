@@ -25,7 +25,7 @@ export async function signSendChunkv1(app, chunkIdx, chunkNum, chunk) {
   }
   return app.transport
     .send(CLA, INS.SIGN_ED25519, payloadType, 0, chunk, [0x9000, 0x6984, 0x6a80])
-    .then(response => {
+    .then((response) => {
       const errorCodeData = response.slice(-2);
       const returnCode = errorCodeData[0] * 256 + errorCodeData[1];
       let errorMessage = errorCodeToString(returnCode);
@@ -48,7 +48,7 @@ export async function signSendChunkv1(app, chunkIdx, chunkNum, chunk) {
 }
 
 export async function publicKeyv1(app, data) {
-  return app.transport.send(CLA, INS.GET_ADDR_ED25519, 0, 0, data, [0x9000]).then(response => {
+  return app.transport.send(CLA, INS.GET_ADDR_ED25519, 0, 0, data, [0x9000]).then((response) => {
     const errorCodeData = response.slice(-2);
     const returnCode = errorCodeData[0] * 256 + errorCodeData[1];
 

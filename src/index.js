@@ -122,7 +122,7 @@ export default class OasisApp {
   }
 
   async appInfo() {
-    return this.transport.send(0xb0, 0x01, 0, 0).then(response => {
+    return this.transport.send(0xb0, 0x01, 0, 0).then((response) => {
       const errorCodeData = response.slice(-2);
       const returnCode = errorCodeData[0] * 256 + errorCodeData[1];
 
@@ -172,7 +172,7 @@ export default class OasisApp {
   }
 
   async deviceInfo() {
-    return this.transport.send(0xe0, 0x01, 0, 0, Buffer.from([]), [0x9000, 0x6e00]).then(response => {
+    return this.transport.send(0xe0, 0x01, 0, 0, Buffer.from([]), [0x9000, 0x6e00]).then((response) => {
       const errorCodeData = response.slice(-2);
       const returnCode = errorCodeData[0] * 256 + errorCodeData[1];
 
@@ -252,7 +252,7 @@ export default class OasisApp {
   async sign(path, context, message) {
     const chunks = await this.signGetChunks(path, context, message);
 
-    return this.signSendChunk(1, chunks.length, chunks[0], [0x9000]).then(async response => {
+    return this.signSendChunk(1, chunks.length, chunks[0], [0x9000]).then(async (response) => {
       let result = {
         return_code: response.return_code,
         error_message: response.error_message,
