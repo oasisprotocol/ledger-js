@@ -1,8 +1,8 @@
 import OasisApp from "index.js";
 import TransportNodeHid from "@ledgerhq/hw-transport-node-hid";
 import { expect, test } from "jest";
-import crypto from "crypto";
 
+const { sha512_256 } = require("js-sha512");
 const ed25519 = require("ed25519-supercop");
 
 const context = "oasis-core/consensus: tx for chain testing";
@@ -28,14 +28,14 @@ test("publicKey", async () => {
   const app = new OasisApp(transport);
 
   // Derivation path. First 3 items are automatically hardened!
-  const path = [44, 118, 0, 0, 0];
+  const path = [44, 474, 0, 0, 0];
   const resp = await app.publicKey(path);
 
   expect(resp.return_code).toEqual(0x9000);
   expect(resp.error_message).toEqual("No errors");
   expect(resp).toHaveProperty("pk");
   expect(resp.pk.length).toEqual(32);
-  expect(resp.pk.toString("hex")).toEqual("17483e0883cf71e2fe4e12f42d1448d06f4274a73b9b6f560c5ed01a32745276");
+  expect(resp.pk.toString("hex")).toEqual("602f762c2ead3709ca640292fb2ecf00f809e9318dbae4c8da7cc775bd2d4c37");
 });
 
 test("getAddressAndPubKey", async () => {
@@ -45,7 +45,7 @@ test("getAddressAndPubKey", async () => {
   const app = new OasisApp(transport);
 
   // Derivation path. First 3 items are automatically hardened!
-  const path = [44, 118, 5, 0, 3];
+  const path = [44, 474, 5, 0, 3];
   const resp = await app.getAddressAndPubKey(path);
 
   console.log(resp);
@@ -56,7 +56,7 @@ test("getAddressAndPubKey", async () => {
   expect(resp).toHaveProperty("bech32_address");
   expect(resp).toHaveProperty("pk");
 
-  expect(resp.bech32_address).toEqual("oasis1sd8kw7q6q7tt70ekqt9mc2gtzkfyqphsmtuqezjvrj74jmefgd5q09q0v");
+  expect(resp.bech32_address).toEqual("oasis1ectg9qs5f7vlnlxce96gm264tqjng0glydhhnk2h4e4tgn442lgtwzrun");
   expect(resp.pk.length).toEqual(32);
 });
 
@@ -67,7 +67,7 @@ test("showAddressAndPubKey", async () => {
   const app = new OasisApp(transport);
 
   // Derivation path. First 3 items are automatically hardened!
-  const path = [44, 118, 5, 0, 3];
+  const path = [44, 474, 5, 0, 3];
   const resp = await app.showAddressAndPubKey(path);
 
   console.log(resp);
@@ -78,7 +78,7 @@ test("showAddressAndPubKey", async () => {
   expect(resp).toHaveProperty("bech32_address");
   expect(resp).toHaveProperty("pk");
 
-  expect(resp.bech32_address).toEqual("oasis1sd8kw7q6q7tt70ekqt9mc2gtzkfyqphsmtuqezjvrj74jmefgd5q09q0v");
+  expect(resp.bech32_address).toEqual("oasis1ectg9qs5f7vlnlxce96gm264tqjng0glydhhnk2h4e4tgn442lgtwzrun");
   expect(resp.pk.length).toEqual(32);
 });
 
@@ -127,10 +127,9 @@ test("sign_and_verify", async () => {
   const app = new OasisApp(transport);
 
   // Derivation path. First 3 items are automatically hardened!
-  const path = [44, 118, 0, 0, 0];
+  const path = [44, 474, 0, 0, 0];
   const message = Buffer.from(
-    "pGNmZWWiY2dhcwBmYW1vdW50QGRib2R5omd4ZmVyX3RvWCBkNhaFWEyIEubmS3EVtRLTanD3U+vDV5fke4Obyq" +
-      "83CWt4ZmVyX3Rva2Vuc0Blbm9uY2UAZm1ldGhvZHBzdGFraW5nLlRyYW5zZmVy",
+    "pGNmZWWiY2dhcwBmYW1vdW50QGRib2R5omd4ZmVyX3RvWCBkNhaFWEyIEubmS3EVtRLTanD3U+vDV5fke4Obyq83CWt4ZmVyX3Rva2Vuc0Blbm9uY2UAZm1ldGhvZHBzdGFraW5nLlRyYW5zZmVy",
     "base64",
   );
 
@@ -145,10 +144,14 @@ test("sign_and_verify", async () => {
   expect(responseSign.return_code).toEqual(0x9000);
   expect(responseSign.error_message).toEqual("No errors");
 
-  const hash = crypto.createHash("sha512");
+  const hash = sha512_256.create();
   hash.update(context);
   hash.update(message);
-  const msgHash = hash.digest();
+  const msgHash = Buffer.from(hash.digest());
+
+  console.log(Buffer.from(responseSign.signature).toString("hex"));
+  console.log(Buffer.from(msgHash).toString("hex"));
+  console.log(Buffer.from(responsePk.pk).toString("hex"));
 
   const valid = ed25519.verify(responseSign.signature, msgHash, responsePk.pk);
   expect(valid).toEqual(true);
