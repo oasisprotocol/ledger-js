@@ -43,7 +43,7 @@
 import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
 import OasisApp from "../../src";
 
-const path = [44, 118, 5, 0, 3];
+const path = [44, 474, 0, 0, 0];
 
 export default {
   name: "Ledger",
