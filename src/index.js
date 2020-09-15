@@ -15,7 +15,6 @@
  *  limitations under the License.
  ******************************************************************************* */
 
-import bech32 from "bech32";
 import { publicKeyv1, serializePathv1, signSendChunkv1 } from "./helperV1";
 import {
   APP_KEY,
@@ -53,16 +52,9 @@ export default class OasisApp {
     this.transport = transport;
     transport.decorateAppAPIMethods(
       this,
-      ["getVersion", "sign", "getAddressAndPubKey", "appInfo", "deviceInfo", "getBech32FromPK"],
+      ["getVersion", "sign", "getAddressAndPubKey", "appInfo", "deviceInfo"],
       scrambleKey,
     );
-  }
-
-  static getBech32FromPK(pk) {
-    if (pk.length !== 32) {
-      throw new Error("expected public key [32 bytes]");
-    }
-    return bech32.encode(DEFAULT_HRP, bech32.toWords(pk));
   }
 
   async serializePath(path) {

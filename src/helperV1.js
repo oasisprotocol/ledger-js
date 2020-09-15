@@ -5,12 +5,13 @@ export function serializePathv1(path) {
     throw new Error("Invalid path.");
   }
 
-  const buf = Buffer.alloc(20);
-  buf.writeUInt32LE(0x80000000 + path[0], 0);
-  buf.writeUInt32LE(0x80000000 + path[1], 4);
-  buf.writeUInt32LE(0x80000000 + path[2], 8);
-  buf.writeUInt32LE(path[3], 12);
-  buf.writeUInt32LE(path[4], 16);
+  /* eslint no-bitwise: "off", no-plusplus: "off" */
+  const buf = Buffer.alloc(path.length * 4);
+  for (let i = 0; i < path.length; i++) {
+    // Harden all path components by ORing them with 0x80000000.
+    const hardened = (0x80000000 | path[i]) >>> 0;
+    buf.writeUInt32LE(hardened, i * 4);
+  }
 
   return buf;
 }
