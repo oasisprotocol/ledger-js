@@ -1,12 +1,12 @@
 {
-  "name": "ledger-oasis-js",
+  "name": "@oasisprotocol/ledger",
   "version": "0.0.0",
-  "description": "Node API for Oasis App (Ledger Nano S/X)",
+  "description": "Javascript / Node API for Oasis apps running on Ledger Nano S/X",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/zondax/ledger-oasis-js.git"
+    "url": "git+https://github.com/oasisprotocol/ledger-js.git"
   },
   "keywords": [
     "Ledger",
@@ -16,9 +16,9 @@
   "author": "ZondaX GmbH",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/zondax/ledger-oasis-js/issues"
+    "url": "https://github.com/oasisprotocol/ledger-js/issues"
   },
-  "homepage": "https://github.com/zondax/ledger-oasis-js",
+  "homepage": "https://github.com/oasisprotocol/ledger-js",
   "dependencies": {
     "@babel/runtime": "^7.9.2",
     "@ledgerhq/hw-transport": "^5.12.0",
