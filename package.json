@@ -44,7 +44,7 @@
     "crypto-js": "4.0.0",
     "ed25519-supercop": "^2.0.1",
     "eslint": "^7.1.0",
-    "eslint-config-airbnb-base": "^14.1.0",
+    "eslint-config-airbnb-base": "^14.2.0",
     "eslint-config-prettier": "^6.10.1",
     "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-jest": "^23.8.2",
