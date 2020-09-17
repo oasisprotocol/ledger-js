@@ -24,7 +24,6 @@ import {
   errorCodeToString,
   getVersion,
   processErrorResponse,
-  DEFAULT_HRP,
   P1_VALUES,
 } from "./common";
 
