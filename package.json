@@ -55,8 +55,8 @@
     "jest-serial-runner": "^1.1.0",
     "js-sha512": "^0.8.0",
     "prettier": "^2.1.2",
-    "vue": "^2.6.10",
-    "vue-template-compiler": "^2.6.10"
+    "vue": "^2.6.12",
+    "vue-template-compiler": "^2.6.12"
   },
   "scripts": {
     "build": "babel src --out-dir dist",
