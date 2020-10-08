@@ -1,0 +1,50 @@
+# NOTE: This name appears in GitHub's Checks API and in workflow's status badge.
+name: release
+
+# Trigger the workflow when:
+on:
+  # A push occurs to one of the matched tags.
+  push:
+    tags:
+      # Pattern that roughly matches Ledger JS' version tags.
+      # For more details on GitHub Actions' pattern match syntax, see:
+      # https://help.github.com/en/actions/automating-your-workflow-with-github-actions/workflow-syntax-for-github-actions#patterns-to-match-branches-and-tags.
+      - 'v[0-9]+.[0-9]+*'
+
+jobs:
+
+  prepare-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          # Check out pull request's HEAD commit instead of the merge commit to
+          # work-around an issue where a wrong commit is being checked out.
+          # For more details, see:
+          # https://github.com/actions/checkout/issues/299.
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Install needed system packages
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y libusb-1.0.0 libudev-dev
+
+      - name: Set up Node.js 12
+        uses: actions/setup-node@v2.1.2
+        with:
+          node-version: '12'
+          registry-url: https://registry.npmjs.org
+
+      - name: Build code
+        run: |
+          yarn install
+          yarn build
+
+      - name: Publish release on NPM
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          yarn publish \
+            --tag latest \
+            --access public
