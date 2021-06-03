@@ -40,7 +40,7 @@
 
 <script>
 // eslint-disable-next-line import/no-extraneous-dependencies
-import TransportWebHID from "@ledgerhq/hw-transport-webhid";
+import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
 import OasisApp from "../../src";
 
 const path = [44, 474, 0, 0, 0];
@@ -51,7 +51,7 @@ export default {
   data() {
     return {
       deviceLog: [],
-      transportChoice: "WebHID",
+      transportChoice: "WebUSB",
     };
   },
   computed: {
@@ -71,7 +71,7 @@ export default {
 
       this.log(`Trying to connect`);
       try {
-        transport = await TransportWebHID.create();
+        transport = await TransportWebUSB.create();
       } catch (e) {
         this.log(e);
       }
@@ -81,7 +81,7 @@ export default {
     async getVersion() {
       this.deviceLog = [];
 
-      // Given a transport (U2F/HIF/WebUSB/WebHID) it is possible instantiate the app
+      // Given a transport (U2F/HIF/WebUSB) it is possible instantiate the app
       const transport = await this.getTransport();
       const app = new OasisApp(transport);
 
@@ -102,7 +102,7 @@ export default {
     async appInfo() {
       this.deviceLog = [];
 
-      // Given a transport (U2F/HIF/WebUSB/WebHID) it is possible instantiate the app
+      // Given a transport (U2F/HIF/WebUSB) it is possible instantiate the app
       const transport = await this.getTransport();
       const app = new OasisApp(transport);
 
@@ -119,7 +119,7 @@ export default {
     async getPublicKey() {
       this.deviceLog = [];
 
-      // Given a transport (U2F/HIF/WebUSB/WebHID) it is possible instantiate the app
+      // Given a transport (U2F/HIF/WebUSB) it is possible instantiate the app
       const transport = await this.getTransport();
       const app = new OasisApp(transport);
 
@@ -142,7 +142,7 @@ export default {
     async getAddress() {
       this.deviceLog = [];
 
-      // Given a transport (U2F/HIF/WebUSB/WebHID) it is possible instantiate the app
+      // Given a transport (U2F/HIF/WebUSB) it is possible instantiate the app
       const transport = await this.getTransport();
       const app = new OasisApp(transport);
 
@@ -165,7 +165,7 @@ export default {
     async showAddress() {
       this.deviceLog = [];
 
-      // Given a transport (U2F/HIF/WebUSB/WebHID) it is possible instantiate the app
+      // Given a transport (U2F/HIF/WebUSB) it is possible instantiate the app
       const transport = await this.getTransport();
       const app = new OasisApp(transport);
 
@@ -189,7 +189,7 @@ export default {
     async signExampleTx() {
       this.deviceLog = [];
 
-      // Given a transport (U2F/HID/WebUSB/WebHID) it is possible instantiate the app
+      // Given a transport (U2F/HID/WebUSB) it is possible instantiate the app
       const transport = await this.getTransport();
       const app = new OasisApp(transport);
 
