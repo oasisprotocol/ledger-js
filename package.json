@@ -66,6 +66,7 @@
   },
   "scripts": {
     "build": "babel src --out-dir dist",
+    "build-example": "vue-cli-service build vue_example/main.js",
     "certificate": "openssl req -nodes -new -x509 -keyout certs/server.key -out certs/server.cert; openssl x509 -in certs/server.cert -out certs/cert.pem -outform PEM",
     "test:unit": "jest -c jest.config.unit.js",
     "test:integration": "jest -c jest.config.integration.js --runInBand --detectOpenHandles",
