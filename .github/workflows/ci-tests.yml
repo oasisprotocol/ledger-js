@@ -34,7 +34,7 @@ jobs:
           sudo apt-get install -y libusb-1.0.0 libudev-dev
 
       - name: Set up Node.js 12
-        uses: actions/setup-node@v2.1.2
+        uses: actions/setup-node@v2.2.0
         with:
           node-version: '12'
 
