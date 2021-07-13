@@ -4,29 +4,17 @@
     <!--
         Commands
     -->
-    <button @click="getVersion">
-      Get Version
-    </button>
+    <button @click="getVersion">Get Version</button>
 
-    <button @click="appInfo">
-      AppInfo
-    </button>
+    <button @click="appInfo">AppInfo</button>
 
-    <button @click="getPublicKey">
-      Get pubkey only
-    </button>
+    <button @click="getPublicKey">Get pubkey only</button>
 
-    <button @click="getAddress">
-      Get Address and Pubkey
-    </button>
+    <button @click="getAddress">Get Address and Pubkey</button>
 
-    <button @click="showAddress">
-      Show Address and Pubkey
-    </button>
+    <button @click="showAddress">Show Address and Pubkey</button>
 
-    <button @click="signExampleTx">
-      Sign Example TX
-    </button>
+    <button @click="signExampleTx">Sign Example TX</button>
     <!--
         Commands
     -->
