@@ -57,8 +57,7 @@
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-vue": "^7.13.0",
     "index.js": "^0.0.3",
-    "jest": "^26.0.1",
-    "jest-serial-runner": "^1.1.0",
+    "jest": "^27.0.6",
     "js-sha512": "^0.8.0",
     "prettier": "^2.1.2",
     "vue": "^2.6.12",
@@ -67,7 +66,7 @@
   "scripts": {
     "build": "babel src --out-dir dist",
     "certificate": "openssl req -nodes -new -x509 -keyout certs/server.key -out certs/server.cert; openssl x509 -in certs/server.cert -out certs/cert.pem -outform PEM",
-    "test:unit": "jest -c jest.config.unit.js",
+    "test:unit": "jest -c jest.config.unit.js --runInBand",
     "test:integration": "jest -c jest.config.integration.js --runInBand --detectOpenHandles",
     "serve": "vue-cli-service serve vue_example/main.js"
   },
