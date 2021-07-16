@@ -27,7 +27,7 @@
   "homepage": "https://github.com/oasisprotocol/ledger-js",
   "dependencies": {
     "@babel/runtime": "^7.9.2",
-    "@ledgerhq/hw-transport": "^5.51.1",
+    "@ledgerhq/hw-transport": "^6.1.0",
     "bech32": "^2.0.0"
   },
   "devDependencies": {
