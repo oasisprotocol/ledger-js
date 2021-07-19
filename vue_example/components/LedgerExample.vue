@@ -4,29 +4,17 @@
     <!--
         Commands
     -->
-    <button @click="getVersion">
-      Get Version
-    </button>
+    <button @click="getVersion">Get Version</button>
 
-    <button @click="appInfo">
-      AppInfo
-    </button>
+    <button @click="appInfo">AppInfo</button>
 
-    <button @click="getPublicKey">
-      Get pubkey only
-    </button>
+    <button @click="getPublicKey">Get pubkey only</button>
 
-    <button @click="getAddress">
-      Get Address and Pubkey
-    </button>
+    <button @click="getAddress">Get Address and Pubkey</button>
 
-    <button @click="showAddress">
-      Show Address and Pubkey
-    </button>
+    <button @click="showAddress">Show Address and Pubkey</button>
 
-    <button @click="signExampleTx">
-      Sign Example TX
-    </button>
+    <button @click="signExampleTx">Sign Example TX</button>
     <!--
         Commands
     -->
@@ -200,8 +188,8 @@ export default {
 
       const context = "oasis-core/consensus: tx for chain testing";
       const message = Buffer.from(
-        "pGNmZWWiY2dhcwBmYW1vdW50QGRib2R5omd4ZmVyX3RvWCBkNhaFWEyIEubmS3EVtRLTanD3U+vDV5fke4Obyq" +
-          "83CWt4ZmVyX3Rva2Vuc0Blbm9uY2UAZm1ldGhvZHBzdGFraW5nLlRyYW5zZmVy",
+        "pGNmZWWiY2dhcwBmYW1vdW50QGRib2R5omJ0b1UADPcg0nfdGTur44EtUOq7dlHKFQ5mYW1vdW50QGVub25jZQ" +
+          "BmbWV0aG9kcHN0YWtpbmcuVHJhbnNmZXI=",
         "base64",
       );
       response = await app.sign(path, context, message);
