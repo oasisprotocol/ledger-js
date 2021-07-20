@@ -1310,7 +1310,7 @@
     "@types/yargs" "^16.0.0"
     chalk "^4.0.0"
 
-"@ledgerhq/devices@^6.1.0", "@ledgerhq/devices@^6.2.0":
+"@ledgerhq/devices@^6.2.0":
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/@ledgerhq/devices/-/devices-6.2.0.tgz#2dd38ff81bb72d5d93eb9137574ef53a83f68b78"
   integrity sha512-X64YWq29E0Ogqb5HPeNjzLaDxre4yPK9yv3AJ3ttTCNrES4qM/QPkb1E/rAhD75LTXVBDb8NKJRPA9fKKLpdcg==
@@ -1320,7 +1320,7 @@
     rxjs "6"
     semver "^7.3.5"
 
-"@ledgerhq/errors@^6.0.2", "@ledgerhq/errors@^6.2.0":
+"@ledgerhq/errors@^6.2.0":
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/@ledgerhq/errors/-/errors-6.2.0.tgz#7dc2b3bf6bdedccdaa1b97dccacfa912c4fc22f8"
   integrity sha512-eO03x8HJmG60WtlrMuahigW/rwywFdcGzCnihta/MjkM8BD9A660cKVkyIuheCcpaB7UV/r+QsRl9abHbjjaag==
@@ -1351,14 +1351,14 @@
     usb "^1.7.0"
 
 "@ledgerhq/hw-transport-webusb@^6.1.0":
-  version "6.1.0"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-webusb/-/hw-transport-webusb-6.1.0.tgz#47f779c000de6b1f6d7e3b44805bcc18beea416c"
-  integrity sha512-UsfB9UcDgAo6ykO40Ai8qimv/VYvGwZVIe65nUGs6JK+2PRnkuk2i00FTK3NTgmvIeX4cOIlkg8+ZmGQuB8Evw==
+  version "6.2.0"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-webusb/-/hw-transport-webusb-6.2.0.tgz#5731ac9da48ba984a1c729f32185c823f8a3ff5e"
+  integrity sha512-syzdx1JFB6mWCeFIsLr6Scnaqn3RgUxsuL1HCi+fYPC/ITxyquUlcVD/85Rsxr0wLUd+Xat3812hrhV37S6jbA==
   dependencies:
-    "@ledgerhq/devices" "^6.1.0"
-    "@ledgerhq/errors" "^6.0.2"
-    "@ledgerhq/hw-transport" "^6.1.0"
-    "@ledgerhq/logs" "^6.0.2"
+    "@ledgerhq/devices" "^6.2.0"
+    "@ledgerhq/errors" "^6.2.0"
+    "@ledgerhq/hw-transport" "^6.2.0"
+    "@ledgerhq/logs" "^6.2.0"
 
 "@ledgerhq/hw-transport@^6.1.0", "@ledgerhq/hw-transport@^6.2.0":
   version "6.2.0"
