@@ -47,7 +47,7 @@
     "bip32": "2.0.6",
     "bip39": "3.0.4",
     "core-js": "^3.4.8",
-    "crypto-js": "4.0.0",
+    "crypto-js": "4.1.1",
     "ed25519-supercop": "^2.0.1",
     "eslint": "^7.10.0",
     "eslint-config-airbnb-base": "^14.2.0",
