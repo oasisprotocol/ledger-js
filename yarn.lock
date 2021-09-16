@@ -1414,7 +1414,7 @@
     "@types/yargs" "^16.0.0"
     chalk "^4.0.0"
 
-"@ledgerhq/devices@^6.3.0", "@ledgerhq/devices@^6.7.0":
+"@ledgerhq/devices@^6.7.0":
   version "6.7.0"
   resolved "https://registry.yarnpkg.com/@ledgerhq/devices/-/devices-6.7.0.tgz#90e8fef16e6d039dec64e8a7f1874031578e1973"
   integrity sha512-FWJfmdl8V300++OXLgBLpIi+IJoR/srWvxpXrWkc9hd3cNMxgeCl9opm84Y0oJDLBQL9AaERMrb+Cb1nZZR9Tw==
@@ -1455,16 +1455,16 @@
     usb "^1.7.0"
 
 "@ledgerhq/hw-transport-webusb@^6.1.0":
-  version "6.6.0"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-webusb/-/hw-transport-webusb-6.6.0.tgz#9be0d9f32ccee27f754bc50b35d9a703ebcc4d36"
-  integrity sha512-ovY2IzbmAFsVgym7ftLU4c36Me5DHuM41rdI7XipMRd1COvnYNiutqAMym2RLk5IS2LRPAqTWiWgt86Oy6DGvQ==
+  version "6.7.0"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-webusb/-/hw-transport-webusb-6.7.0.tgz#2d7fab52280c703ac66b0970ca636e8ba358d0af"
+  integrity sha512-IyUOAkXd2g5YG/DaRUer/7hZQnecxJDZK2MKFwpafpUbyJQNdkW09CcodinB3e/Y+pjk6O0XuGzUKLgk3dc2vQ==
   dependencies:
-    "@ledgerhq/devices" "^6.3.0"
+    "@ledgerhq/devices" "^6.7.0"
     "@ledgerhq/errors" "^6.2.0"
-    "@ledgerhq/hw-transport" "^6.3.0"
+    "@ledgerhq/hw-transport" "^6.7.0"
     "@ledgerhq/logs" "^6.2.0"
 
-"@ledgerhq/hw-transport@^6.1.0", "@ledgerhq/hw-transport@^6.3.0", "@ledgerhq/hw-transport@^6.7.0":
+"@ledgerhq/hw-transport@^6.1.0", "@ledgerhq/hw-transport@^6.7.0":
   version "6.7.0"
   resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport/-/hw-transport-6.7.0.tgz#d1f0d70e21b91e6457a32d4c3cec0764e97461ff"
   integrity sha512-w+PhW6Y4KXYdoCykkE1zt0VL6Ryf72RP8sZP8OH1O90hX/R/q9BMYKl8VNqTbqlrOrORgATlKkbmIJBjbngZew==
