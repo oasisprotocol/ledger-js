@@ -236,6 +236,7 @@ export default class OasisApp {
     switch (this.versionResponse.major) {
       case 0:
       case 1:
+      case 2:
         return signSendChunkv1(this, chunkIdx, chunkNum, chunk);
       default:
         return {
