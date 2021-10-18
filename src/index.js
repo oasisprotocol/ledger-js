@@ -250,6 +250,7 @@ export default class OasisApp {
     if ("return_code" in chunks && chunks.return_code !== 0x9000) return chunks;
 
     return this.signSendChunk(1, chunks.length, chunks[0]).then(async (response) => {
+      if (response.return_code !== 0x9000) return response;
       let result = {
         return_code: response.return_code,
         error_message: response.error_message,
