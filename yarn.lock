@@ -1472,9 +1472,9 @@
     events "^3.3.0"
 
 "@ledgerhq/logs@^6.0.2", "@ledgerhq/logs@^6.2.0":
-  version "6.2.0"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/logs/-/logs-6.2.0.tgz#9fb2d6f1811316697f7b3cc14607f6c608912419"
-  integrity sha512-SLyFyD7ElMhgKWPYedFGCT/ilcbGPgL5hXXYHxOM79Fs5fWi0zaUpt5oGqGMsOAAFaMa9/rbun0pokzPhEFz8A==
+  version "6.10.0"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/logs/-/logs-6.10.0.tgz#c012c1ecc1a0e53d50e6af381618dca5268461c1"
+  integrity sha512-lLseUPEhSFUXYTKj6q7s2O3s2vW2ebgA11vMAlKodXGf5AFw4zUoEbTz9CoFOC9jS6xY4Qr8BmRnxP/odT4Uuw==
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
