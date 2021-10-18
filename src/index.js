@@ -61,6 +61,7 @@ export default class OasisApp {
     switch (this.versionResponse.major) {
       case 0:
       case 1:
+      case 2:
         return serializePathv1(path);
       default:
         return {
