@@ -52,6 +52,8 @@ export function errorCodeToString(statusCode) {
 }
 
 export function processErrorResponse(response) {
+  // Leave non-Ledger errors as they are.
+  if (!("statusCode" in response)) throw response;
   return {
     return_code: response.statusCode,
     error_message: errorCodeToString(response.statusCode),
