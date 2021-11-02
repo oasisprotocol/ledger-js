@@ -61,6 +61,7 @@ export default class OasisApp {
     switch (this.versionResponse.major) {
       case 0:
       case 1:
+      case 2:
         return serializePathv1(path);
       default:
         return {
@@ -103,6 +104,11 @@ export default class OasisApp {
 
   async signGetChunks(path, context, message) {
     const serializedPath = await this.serializePath(path);
+    // NOTE: serializePath can return an error (not throw, but return an error!)
+    // so handle that.
+    if ("return_code" in serializedPath && serializedPath.return_code !== 0x9000) {
+      return serializedPath;
+    }
 
     return OasisApp.prepareChunks(serializedPath, context, message);
   }
@@ -210,11 +216,21 @@ export default class OasisApp {
 
   async publicKey(path) {
     const serializedPath = await this.serializePath(path);
+    // NOTE: serializePath can return an error (not throw, but return an error!)
+    // so handle that.
+    if ("return_code" in serializedPath && serializedPath.return_code !== 0x9000) {
+      return serializedPath;
+    }
     return publicKeyv1(this, serializedPath);
   }
 
   async getAddressAndPubKey(path) {
     const data = await this.serializePath(path);
+    // NOTE: serializePath can return an error (not throw, but return an error!)
+    // so handle that.
+    if ("return_code" in data && data.return_code !== 0x9000) {
+      return data;
+    }
     return this.transport
       .send(CLA, INS.GET_ADDR_ED25519, P1_VALUES.ONLY_RETRIEVE, 0, data, [0x9000])
       .then(processGetAddrEd25519Response, processErrorResponse);
@@ -222,6 +238,11 @@ export default class OasisApp {
 
   async showAddressAndPubKey(path) {
     const data = await this.serializePath(path);
+    // NOTE: serializePath can return an error (not throw, but return an error!)
+    // so handle that.
+    if ("return_code" in data && data.return_code !== 0x9000) {
+      return data;
+    }
     return this.transport
       .send(CLA, INS.GET_ADDR_ED25519, P1_VALUES.SHOW_ADDRESS_IN_DEVICE, 0, data, [0x9000])
       .then(processGetAddrEd25519Response, processErrorResponse);
@@ -231,6 +252,7 @@ export default class OasisApp {
     switch (this.versionResponse.major) {
       case 0:
       case 1:
+      case 2:
         return signSendChunkv1(this, chunkIdx, chunkNum, chunk);
       default:
         return {
@@ -242,8 +264,16 @@ export default class OasisApp {
 
   async sign(path, context, message) {
     const chunks = await this.signGetChunks(path, context, message);
+    // NOTE: signGetChunks can return an error (not throw, but return an error!)
+    // so handle that.
+    if ("return_code" in chunks && chunks.return_code !== 0x9000) {
+      return chunks;
+    }
 
-    return this.signSendChunk(1, chunks.length, chunks[0], [0x9000]).then(async (response) => {
+    return this.signSendChunk(1, chunks.length, chunks[0]).then(async (response) => {
+      if (response.return_code !== 0x9000) {
+        return response;
+      }
       let result = {
         return_code: response.return_code,
         error_message: response.error_message,

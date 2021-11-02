@@ -47,11 +47,17 @@ const ERROR_DESCRIPTION = {
 };
 
 export function errorCodeToString(statusCode) {
-  if (statusCode in ERROR_DESCRIPTION) return ERROR_DESCRIPTION[statusCode];
+  if (statusCode in ERROR_DESCRIPTION) {
+    return ERROR_DESCRIPTION[statusCode];
+  }
   return `Unknown Status Code: ${statusCode}`;
 }
 
 export function processErrorResponse(response) {
+  // Leave non-Ledger errors as they are.
+  if (!("statusCode" in response)) {
+    throw response;
+  }
   return {
     return_code: response.statusCode,
     error_message: errorCodeToString(response.statusCode),
