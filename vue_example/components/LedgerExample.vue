@@ -34,7 +34,7 @@ import OasisApp from "../../src";
 const path = [44, 474, 0, 0, 0];
 
 export default {
-  name: "Ledger",
+  name: "LedgerExample",
   props: {},
   data() {
     return {
