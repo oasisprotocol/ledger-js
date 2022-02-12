@@ -1,8 +1,8 @@
 import TransportNodeHid from "@ledgerhq/hw-transport-node-hid";
 import { expect, test } from "@jest/globals";
+import { createHash } from "crypto";
 import OasisApp from "../src/index";
 
-const { sha512_256 } = require("js-sha512");
 const ed25519 = require("ed25519-supercop");
 
 const context = "oasis-core/consensus: tx for chain testing";
@@ -144,7 +144,7 @@ test("sign_and_verify", async () => {
   expect(responseSign.return_code).toEqual(0x9000);
   expect(responseSign.error_message).toEqual("No errors");
 
-  const hash = sha512_256.create();
+  const hash = createHash("sha512-256");
   hash.update(context);
   hash.update(message);
   const msgHash = Buffer.from(hash.digest());
