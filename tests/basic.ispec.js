@@ -1,6 +1,6 @@
 import OasisApp from "index.js";
 import TransportNodeHid from "@ledgerhq/hw-transport-node-hid";
-import { expect, test } from "jest";
+import { expect, test } from "@jest/globals";
 
 const { sha512_256 } = require("js-sha512");
 const ed25519 = require("ed25519-supercop");

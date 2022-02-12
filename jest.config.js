@@ -5,7 +5,6 @@ module.exports = {
   modulePaths: ["<rootDir>/src", "<rootDir>/tests"],
 
   moduleNameMapper: {
-    "^jest$": "<rootDir>/tests/jest.js",
     "^index.js$": "<rootDir>/src/index.js",
   },
 
