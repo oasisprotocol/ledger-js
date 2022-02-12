@@ -1,4 +1,4 @@
-import OasisApp from "index.js";
+import OasisApp from "../src/index";
 import { serializePathv1 } from "../src/helperV1";
 
 const context = "oasis-core/consensus: tx for chain testing";
