@@ -1,7 +1,9 @@
 import { CLA, errorCodeToString, INS, PAYLOAD_TYPE, processErrorResponse } from "./common";
 
 export function serializePathv1(path) {
-  if (!path || path.length !== 5) {
+  // length 3: ADR 8 derivation path
+  // length 5: Legacy derivation path
+  if (!path || (path.length !== 3 && path.length !== 5)) {
     throw new Error("Invalid path.");
   }
 

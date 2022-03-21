@@ -1,5 +1,10 @@
 <template>
   <div class="Ledger">
+    Derivation path:
+    <select ref="path">
+      <option value="adr8">ADR 8</option>
+      <option value="legacy">Legacy</option>
+    </select>
     <br />
     <!--
         Commands
@@ -31,7 +36,8 @@
 import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
 import OasisApp from "../../src";
 
-const path = [44, 474, 0, 0, 0];
+const pathLegacy = [44, 474, 0, 0, 0];
+const pathAdr8 = [44, 474, 0];
 
 export default {
   name: "LedgerExample",
@@ -53,6 +59,16 @@ export default {
         index: this.deviceLog.length,
         msg,
       });
+    },
+    getPath() {
+      switch (this.$refs.path.value) {
+        case "legacy":
+          return pathLegacy;
+        case "adr8":
+          return pathAdr8;
+        default:
+          return undefined;
+      }
     },
     async getTransport() {
       let transport = null;
@@ -117,7 +133,7 @@ export default {
       this.log(`Test mode: ${response.test_mode}`);
 
       // now it is possible to access all commands in the app
-      response = await app.publicKey(path);
+      response = await app.publicKey(this.getPath());
       if (response.return_code !== 0x9000) {
         this.log(`Error [${response.return_code}] ${response.error_message}`);
         return;
@@ -140,7 +156,7 @@ export default {
       this.log(`Test mode: ${response.test_mode}`);
 
       // now it is possible to access all commands in the app
-      response = await app.getAddressAndPubKey(path);
+      response = await app.getAddressAndPubKey(this.getPath());
       if (response.return_code !== 0x9000) {
         this.log(`Error [${response.return_code}] ${response.error_message}`);
         return;
@@ -164,7 +180,7 @@ export default {
 
       // now it is possible to access all commands in the app
       this.log("Please click in the device");
-      response = await app.showAddressAndPubKey(path);
+      response = await app.showAddressAndPubKey(this.getPath());
       if (response.return_code !== 0x9000) {
         this.log(`Error [${response.return_code}] ${response.error_message}`);
         return;
@@ -192,7 +208,7 @@ export default {
           "BmbWV0aG9kcHN0YWtpbmcuVHJhbnNmZXI=",
         "base64",
       );
-      response = await app.sign(path, context, message);
+      response = await app.sign(this.getPath(), context, message);
 
       this.log("Response received!");
       this.log("Full response:");
