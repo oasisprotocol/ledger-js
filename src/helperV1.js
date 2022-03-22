@@ -1,5 +1,6 @@
 import { CLA, errorCodeToString, INS, PAYLOAD_TYPE, processErrorResponse } from "./common";
 
+/** @param {import('./types').DerivationPath} path */
 export function serializePathv1(path) {
   // length 3: ADR 8 derivation path
   // length 5: Legacy derivation path
@@ -18,6 +19,7 @@ export function serializePathv1(path) {
   return buf;
 }
 
+/** @param {import('./types').App} app */
 export async function signSendChunkv1(app, chunkIdx, chunkNum, chunk) {
   let payloadType = PAYLOAD_TYPE.ADD;
   if (chunkIdx === 1) {
@@ -50,6 +52,7 @@ export async function signSendChunkv1(app, chunkIdx, chunkNum, chunk) {
     }, processErrorResponse);
 }
 
+/** @param {import('./types').App} app */
 export async function publicKeyv1(app, data) {
   return app.transport.send(CLA, INS.GET_ADDR_ED25519, 0, 0, data, [0x9000]).then((response) => {
     const errorCodeData = response.slice(-2);

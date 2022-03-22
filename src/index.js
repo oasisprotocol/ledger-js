@@ -43,10 +43,14 @@ function processGetAddrEd25519Response(response) {
 }
 
 export default class OasisApp {
+  /** @param {import('./types').Transport} transport */
   constructor(transport, scrambleKey = APP_KEY) {
     if (!transport) {
       throw new Error("Transport has not been defined");
     }
+
+    /** @type {Awaited<ReturnType<typeof getVersion>>} */
+    this.versionResponse = undefined;
 
     this.transport = transport;
     transport.decorateAppAPIMethods(
@@ -56,6 +60,7 @@ export default class OasisApp {
     );
   }
 
+  /** @param {import('./types').DerivationPath} path */
   async serializePath(path) {
     this.versionResponse = await getVersion(this.transport);
     switch (this.versionResponse.major) {
@@ -72,6 +77,7 @@ export default class OasisApp {
   }
 
   static prepareChunks(serializedPathBuffer, context, message) {
+    /** @type {Buffer[]} */
     const chunks = [];
 
     // First chunk (only path)
@@ -86,7 +92,7 @@ export default class OasisApp {
     }
 
     if (contextSizeBuffer.length > 1) {
-      throw new Error("Context size buffer should be exacty 1 byte");
+      throw new Error("Context size buffer should be exactly 1 byte");
     }
 
     // Now split context length + context + message into more chunks
@@ -102,6 +108,7 @@ export default class OasisApp {
     return chunks;
   }
 
+  /** @param {import('./types').DerivationPath} path */
   async signGetChunks(path, context, message) {
     const serializedPath = await this.serializePath(path);
     // NOTE: serializePath can return an error (not throw, but return an error!)
@@ -202,7 +209,10 @@ export default class OasisApp {
       }
       const mcuVersion = tmp.toString();
 
-      return {
+      // Note: must save to variable before returning, so that inferred type is
+      // `{error_message} | {mcuVersion}` instead of `{error_message, mcuVersion?}`.
+      // https://github.com/oasisprotocol/ledger-js/pull/415#discussion_r833791641
+      const info = {
         return_code: returnCode,
         error_message: errorCodeToString(returnCode),
         // //
@@ -211,9 +221,14 @@ export default class OasisApp {
         flag,
         mcuVersion,
       };
+      return info;
     }, processErrorResponse);
   }
 
+  /**
+   * @param {import('./types').DerivationPath} path
+   * @returns {import('./types').AsyncResponse<{pk: Buffer}>}
+   */
   async publicKey(path) {
     const serializedPath = await this.serializePath(path);
     // NOTE: serializePath can return an error (not throw, but return an error!)
@@ -224,6 +239,7 @@ export default class OasisApp {
     return publicKeyv1(this, serializedPath);
   }
 
+  /** @param {import('./types').DerivationPath} path */
   async getAddressAndPubKey(path) {
     const data = await this.serializePath(path);
     // NOTE: serializePath can return an error (not throw, but return an error!)
@@ -236,6 +252,7 @@ export default class OasisApp {
       .then(processGetAddrEd25519Response, processErrorResponse);
   }
 
+  /** @param {import('./types').DerivationPath} path */
   async showAddressAndPubKey(path) {
     const data = await this.serializePath(path);
     // NOTE: serializePath can return an error (not throw, but return an error!)
@@ -248,6 +265,7 @@ export default class OasisApp {
       .then(processGetAddrEd25519Response, processErrorResponse);
   }
 
+  /** @returns {import('./types').AsyncResponse<{signature: null | Buffer}>} */
   async signSendChunk(chunkIdx, chunkNum, chunk) {
     switch (this.versionResponse.major) {
       case 0:
@@ -262,6 +280,10 @@ export default class OasisApp {
     }
   }
 
+  /**
+   * @param {import('./types').DerivationPath} path
+   * @returns {import('./types').AsyncResponse<{signature: null | Buffer}>}
+   */
   async sign(path, context, message) {
     const chunks = await this.signGetChunks(path, context, message);
     // NOTE: signGetChunks can return an error (not throw, but return an error!)
@@ -277,6 +299,7 @@ export default class OasisApp {
       let result = {
         return_code: response.return_code,
         error_message: response.error_message,
+        /** @type {null | Buffer} */
         signature: null,
       };
 
