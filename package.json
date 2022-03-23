@@ -56,13 +56,15 @@
     "eslint-plugin-vue": "^8.0.3",
     "jest": "^27.0.6",
     "prettier": "^2.1.2",
+    "typescript": "^4.6.2",
     "vue": "^3.2.31",
     "vue-template-compiler": "^2.6.12",
     "webpack": "^5.54.0"
   },
   "scripts": {
-    "build": "babel src --out-dir dist",
+    "build": "babel src --out-dir dist && yarn build-types",
     "build-example": "vue-cli-service build vue_example/main.js",
+    "build-types": "tsc -p ./tsconfig.json",
     "certificate": "openssl req -nodes -new -x509 -keyout certs/server.key -out certs/server.cert; openssl x509 -in certs/server.cert -out certs/cert.pem -outform PEM",
     "test:unit": "jest -c jest.config.unit.js --runInBand",
     "test:integration": "jest -c jest.config.integration.js --runInBand --detectOpenHandles",
