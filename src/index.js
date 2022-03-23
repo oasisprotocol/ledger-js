@@ -42,6 +42,17 @@ function processGetAddrEd25519Response(response) {
   };
 }
 
+/**
+ * @template T
+ * @param {import('./types').Response<T>} response
+ */
+export function successOrThrow(response) {
+  if (response.return_code !== 0x9000) {
+    throw response;
+  }
+  return /** @type { T } */ (response);
+}
+
 export default class OasisApp {
   /** @param {import('./types').Transport} transport */
   constructor(transport, scrambleKey = APP_KEY) {
