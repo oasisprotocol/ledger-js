@@ -1,0 +1,18 @@
+{
+  "include": ["src"],
+  "compilerOptions": {
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "esModuleInterop": true,
+    "lib": ["esnext", "dom"],
+    "moduleResolution": "node",
+    "module": "esnext",
+    "target": "esnext",
+    "outDir": "dist/",
+    "sourceMap": true,
+    "strict": true,
+    "importsNotUsedAsValues": "error",
+    "skipLibCheck": true,
+    "allowJs": true,
+  },
+}

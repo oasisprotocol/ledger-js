@@ -46,6 +46,7 @@ const ERROR_DESCRIPTION = {
   0x6f01: "Sign/verify error",
 };
 
+/** @returns {string} */
 export function errorCodeToString(statusCode) {
   if (statusCode in ERROR_DESCRIPTION) {
     return ERROR_DESCRIPTION[statusCode];
@@ -53,6 +54,7 @@ export function errorCodeToString(statusCode) {
   return `Unknown Status Code: ${statusCode}`;
 }
 
+/** @param {import('./types').TransportStatusError} response */
 export function processErrorResponse(response) {
   // Leave non-Ledger errors as they are.
   if (!("statusCode" in response)) {
@@ -64,6 +66,7 @@ export function processErrorResponse(response) {
   };
 }
 
+/** @param {import('./types').Transport} transport */
 export async function getVersion(transport) {
   return transport.send(CLA, INS.GET_VERSION, 0, 0).then((response) => {
     const errorCodeData = response.slice(-2);
