@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.2.3
+
+Spotlight change:
+
+- We added TypeScript declarations.
+
 ## v0.2.2
 
 Spotlight change:
