@@ -30,10 +30,10 @@ jobs:
           sudo apt-get update -y
           sudo apt-get install -y libusb-1.0.0 libudev-dev
 
-      - name: Set up Node.js 12
+      - name: Set up Node.js 14
         uses: actions/setup-node@v3
         with:
-          node-version: '12'
+          node-version: '14'
           registry-url: https://registry.npmjs.org
 
       - name: Build code
