@@ -1,4 +1,4 @@
-import Transport from "@ledgerhq/hw-transport";
+import type Transport from "@ledgerhq/hw-transport";
 
 export type { Transport };
 
