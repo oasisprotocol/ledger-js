@@ -27,7 +27,7 @@ test("publicKey", async () => {
   const transport = await TransportNodeHid.create(1000);
   const app = new OasisApp(transport);
 
-  // Derivation path. First 3 items are automatically hardened!
+  // Derivation path. All segments are automatically hardened!
   const path = [44, 474, 0, 0, 0];
   const resp = await app.publicKey(path);
 
@@ -44,7 +44,7 @@ test("getAddressAndPubKey", async () => {
   const transport = await TransportNodeHid.create(1000);
   const app = new OasisApp(transport);
 
-  // Derivation path. First 3 items are automatically hardened!
+  // Derivation path. All segments are automatically hardened!
   const path = [44, 474, 5, 0, 3];
   const resp = await app.getAddressAndPubKey(path);
 
@@ -66,7 +66,7 @@ test("showAddressAndPubKey", async () => {
   const transport = await TransportNodeHid.create(1000);
   const app = new OasisApp(transport);
 
-  // Derivation path. First 3 items are automatically hardened!
+  // Derivation path. All segments are automatically hardened!
   const path = [44, 474, 5, 0, 3];
   const resp = await app.showAddressAndPubKey(path);
 
@@ -126,7 +126,7 @@ test("sign_and_verify", async () => {
   const transport = await TransportNodeHid.create(1000);
   const app = new OasisApp(transport);
 
-  // Derivation path. First 3 items are automatically hardened!
+  // Derivation path. All segments are automatically hardened!
   const path = [44, 474, 0, 0, 0];
   const message = Buffer.from(
     "pGNmZWWiY2dhcwBmYW1vdW50QGRib2R5omd4ZmVyX3RvWCBkNhaFWEyIEubmS3EVtRLTanD3U+vDV5fke4Obyq83CWt4ZmVyX3Rva2Vuc0Blbm9uY2UAZm1ldGhvZHBzdGFraW5nLlRyYW5zZmVy",
@@ -157,13 +157,30 @@ test("sign_and_verify", async () => {
   expect(valid).toEqual(true);
 });
 
+test("path and segments parameters should work the same", async () => {
+  jest.setTimeout(60000);
+
+  const transport = await TransportNodeHid.create(1000);
+  const app = new OasisApp(transport);
+  const message = Buffer.from(
+    "pGNmZWWiY2dhcwBmYW1vdW50QGRib2R5omd4ZmVyX3RvWCBkNhaFWEyIEubmS3EVtRLTanD3U+vDV5fke4Obyq83CWt4ZmVyX3Rva2Vuc0Blbm9uY2UAZm1ldGhvZHBzdGFraW5nLlRyYW5zZmVy",
+    "base64",
+  );
+  const responsePk1 = await app.publicKey([44, 474, 0, 0, 0]);
+  const responseSign1 = await app.sign([44, 474, 0, 0, 0], context, message);
+  const responsePk2 = await app.publicKey("m/44'/474'/0'/0'/0'");
+  const responseSign2 = await app.sign("m/44'/474'/0'/0'/0'", context, message);
+  expect(responsePk1).toEqual(responsePk2);
+  expect(responseSign1).toEqual(responseSign2);
+});
+
 test("sign_invalid", async () => {
   jest.setTimeout(60000);
 
   const transport = await TransportNodeHid.create(1000);
   const app = new OasisApp(transport);
 
-  const path = [44, 118, 0, 0, 0]; // Derivation path. First 3 items are automatically hardened!
+  const path = [44, 118, 0, 0, 0]; // Derivation path. All segments are automatically hardened!
   let invalidMessage = Buffer.from(
     "pGNmZWWiY2dhcwBmYW1vdW50QGRib2R5omd4ZmVyX3RvWCBkNhaFWEyIEubmS3EVtRLTanD3U+vDV5fke4Obyq" +
       "83CWt4ZmVyX3Rva2Vuc0Blbm9uY2UAZm1ldGhvZHBzdGFraW5nLlRyYW5zZmVy",

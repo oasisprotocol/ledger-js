@@ -1,18 +1,38 @@
 import { CLA, errorCodeToString, INS, PAYLOAD_TYPE, processErrorResponse } from "./common";
 
-/** @param {import('./types').DerivationPath} path */
-export function serializePathv1(path) {
+const pathRegex = /^m(\/[0-9]+')+$/;
+
+/** @param {import('./types').DerivationPath} pathOrSegments */
+export function serializePathv1(pathOrSegments) {
+  /** @type {number[]} */
+  let segments;
+  if (typeof pathOrSegments === "string") {
+    // From https://github.com/oasisprotocol/oasis-sdk/blob/09f227c/client-sdk/ts-web/core/src/hdkey.ts#L61-L71
+    if (!pathRegex.test(pathOrSegments)) {
+      throw new Error(
+        "Invalid derivation path. Valid paths must use a format similar to : m/44'/474'/0' and all indexes must be hardened",
+      );
+    }
+
+    segments = pathOrSegments
+      .split("/")
+      .slice(1)
+      .map((val) => val.replace("'", ""))
+      .map((el) => parseInt(el, 10));
+  } else {
+    segments = pathOrSegments;
+  }
   // length 3: ADR 8 derivation path
   // length 5: Legacy derivation path
-  if (!path || (path.length !== 3 && path.length !== 5)) {
+  if (!segments || (segments.length !== 3 && segments.length !== 5)) {
     throw new Error("Invalid path.");
   }
 
   /* eslint no-bitwise: "off", no-plusplus: "off" */
-  const buf = Buffer.alloc(path.length * 4);
-  for (let i = 0; i < path.length; i++) {
+  const buf = Buffer.alloc(segments.length * 4);
+  for (let i = 0; i < segments.length; i++) {
     // Harden all path components by ORing them with 0x80000000.
-    const hardened = (0x80000000 | path[i]) >>> 0;
+    const hardened = (0x80000000 | segments[i]) >>> 0;
     buf.writeUInt32LE(hardened, i * 4);
   }
 

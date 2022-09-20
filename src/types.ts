@@ -8,7 +8,7 @@ export interface TransportStatusError extends Error {
   statusText: "UNKNOWN_ERROR";
 }
 
-export type DerivationPath = number[];
+export type DerivationPath = number[] | string;
 
 export interface App {
   transport: Transport;
