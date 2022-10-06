@@ -1451,7 +1451,7 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
-"@ledgerhq/devices@^7.0.2", "@ledgerhq/devices@^7.0.3":
+"@ledgerhq/devices@^7.0.3":
   version "7.0.3"
   resolved "https://registry.yarnpkg.com/@ledgerhq/devices/-/devices-7.0.3.tgz#bdd7e8ce078399fe644067a7e1ca9a9d2e249c02"
   integrity sha512-URlcgq6yKklWxj35nIu/eTF0UpGLGUOp69xp8uHeyoMK2wqVC0GNGeD2MvKyJ+ul83edqMEI98GycA98Y7trsg==
@@ -1461,7 +1461,7 @@
     rxjs "6"
     semver "^7.3.5"
 
-"@ledgerhq/errors@^6.11.0", "@ledgerhq/errors@^6.11.1":
+"@ledgerhq/errors@^6.11.1":
   version "6.11.1"
   resolved "https://registry.yarnpkg.com/@ledgerhq/errors/-/errors-6.11.1.tgz#a8a81bda6d28ac43c757e109b1ff079ddeec54a6"
   integrity sha512-HT1PFvNrejcN5z3ba6xikacIdHWMkjBeE9U5FFoGHhaKBKGjC74mnCeEo0/oJunyuVId+9mhGnv6lrBl6Mkqdg==
@@ -1492,16 +1492,16 @@
     usb "^1.7.0"
 
 "@ledgerhq/hw-transport-webusb@^6.1.0":
-  version "6.27.5"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-webusb/-/hw-transport-webusb-6.27.5.tgz#89989d0896465c21b33b4dfb7cca594b78e17742"
-  integrity sha512-dDnO0qNGk1nZ5vpe2oKxpuzTqt2Vohh2L1tUgfEKQLRvG2kAsw7G6mW89wX8PIxv5LXzl3IYCj7AgsB+E9w3ag==
+  version "6.27.6"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-webusb/-/hw-transport-webusb-6.27.6.tgz#8c4b5f96419511e3d8159e01baefd52891a91ae1"
+  integrity sha512-fWIu86ZgtmUrTM6T66my9Og6h4uROllDdsibZMhdowKQYW6iajzpSblBDPY9Jiko7g1dEiqvpmNG0K/Dfmqm9Q==
   dependencies:
-    "@ledgerhq/devices" "^7.0.2"
-    "@ledgerhq/errors" "^6.11.0"
-    "@ledgerhq/hw-transport" "^6.27.5"
-    "@ledgerhq/logs" "^6.10.0"
+    "@ledgerhq/devices" "^7.0.3"
+    "@ledgerhq/errors" "^6.11.1"
+    "@ledgerhq/hw-transport" "^6.27.6"
+    "@ledgerhq/logs" "^6.10.1"
 
-"@ledgerhq/hw-transport@^6.1.0", "@ledgerhq/hw-transport@^6.27.5", "@ledgerhq/hw-transport@^6.27.6":
+"@ledgerhq/hw-transport@^6.1.0", "@ledgerhq/hw-transport@^6.27.6":
   version "6.27.6"
   resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport/-/hw-transport-6.27.6.tgz#87f886591bad047c18e76920519aceb9d844667b"
   integrity sha512-DRGUsB8WfbeEPuU42nAtwYpA5D6Bq3q1CvC2VjDinkukLcf6XMc22YUJl9mxt+h+/cLTU1Ff/pz+fqYqeELLEA==
@@ -1510,7 +1510,7 @@
     "@ledgerhq/errors" "^6.11.1"
     events "^3.3.0"
 
-"@ledgerhq/logs@^6.0.2", "@ledgerhq/logs@^6.10.0", "@ledgerhq/logs@^6.10.1":
+"@ledgerhq/logs@^6.0.2", "@ledgerhq/logs@^6.10.1":
   version "6.10.1"
   resolved "https://registry.yarnpkg.com/@ledgerhq/logs/-/logs-6.10.1.tgz#5bd16082261d7364eabb511c788f00937dac588d"
   integrity sha512-z+ILK8Q3y+nfUl43ctCPuR4Y2bIxk/ooCQFwZxhtci1EhAtMDzMAx2W25qx8G1PPL9UUOdnUax19+F0OjXoj4w==
