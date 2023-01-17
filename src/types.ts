@@ -34,8 +34,10 @@ async function typeOnlyTest() {
   console.log(successOrThrow(await app.appInfo()).appName.trim());
   console.log(successOrThrow(await app.deviceInfo()).mcuVersion.trim());
   console.log(successOrThrow(await app.publicKey([44])).pk.byteLength.toFixed());
-  console.log(successOrThrow(await app.getAddressAndPubKey([44])).bech32_address.trim());
-  console.log(successOrThrow(await app.showAddressAndPubKey([44])).bech32_address.trim());
+  console.log(successOrThrow(await app.getAddressAndPubKey_ed25519([44])).bech32_address.trim());
+  console.log(successOrThrow(await app.showAddressAndPubKey_ed25519([44])).bech32_address.trim());
+  console.log(successOrThrow(await app.getAddressAndPubKey_secp256k1([44])).hex_address.trim());
+  console.log(successOrThrow(await app.showAddressAndPubKey_secp256k1([44])).hex_address.trim());
 
   const ctx = 'oasis-core/consensus'
   const msg = Buffer.from('a')

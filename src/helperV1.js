@@ -20,7 +20,7 @@ export function serializePathv1(path) {
 }
 
 /** @param {import('./types').App} app */
-export async function signSendChunkv1(app, chunkIdx, chunkNum, chunk) {
+export async function signSendChunkv1(app, chunkIdx, chunkNum, chunk, ins) {
   let payloadType = PAYLOAD_TYPE.ADD;
   if (chunkIdx === 1) {
     payloadType = PAYLOAD_TYPE.INIT;
@@ -29,7 +29,7 @@ export async function signSendChunkv1(app, chunkIdx, chunkNum, chunk) {
     payloadType = PAYLOAD_TYPE.LAST;
   }
   return app.transport
-    .send(CLA, INS.SIGN_ED25519, payloadType, 0, chunk, [0x9000, 0x6984, 0x6a80])
+    .send(CLA, ins, payloadType, 0, chunk, [0x9000, 0x6984, 0x6a80])
     .then((response) => {
       const errorCodeData = response.slice(-2);
       const returnCode = errorCodeData[0] * 256 + errorCodeData[1];
