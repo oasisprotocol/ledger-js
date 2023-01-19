@@ -87,7 +87,7 @@ describe("Integration", function () {
     const app = new OasisApp(transport);
 
     // Derivation path. First 3 items are automatically hardened!
-    const path = [44, 60, 0, 0, 0];
+    const path = [44, 60, 0];
     const resp = await app.getAddressAndPubKey_secp256k1(path);
 
     console.log(resp);
@@ -98,9 +98,9 @@ describe("Integration", function () {
     expect(resp).toHaveProperty("hex_address");
     expect(resp).toHaveProperty("pk");
 
-    expect(resp.hex_address).toEqual("7dac3ca6b185b7778a7027a52c0cc3940d2e1ca0");
+    expect(resp.hex_address).toEqual("95e5e3c1bdd92cd4a0c14c62480db5867946281d");
     expect(resp.pk.toString("hex")).toEqual(
-      "03e1bd70ae900252c8781608387c2d5aa1876f1cdcbfdc2c2206cbf67e64d8d7aa",
+      "021853d93524119eeb31ab0b06f1dcb068f84943bb230dfa10b1292f47af643575",
     );
     expect(resp.pk.length).toEqual(33);
   });
@@ -109,7 +109,7 @@ describe("Integration", function () {
     const app = new OasisApp(transport);
 
     // Derivation path. First 3 items are automatically hardened!
-    const path = [44, 60, 0, 0, 0];
+    const path = [44, 60, 0];
     const resp = await app.showAddressAndPubKey_secp256k1(path);
 
     console.log(resp);
@@ -120,9 +120,9 @@ describe("Integration", function () {
     expect(resp).toHaveProperty("hex_address");
     expect(resp).toHaveProperty("pk");
 
-    expect(resp.hex_address).toEqual("7dac3ca6b185b7778a7027a52c0cc3940d2e1ca0");
+    expect(resp.hex_address).toEqual("95e5e3c1bdd92cd4a0c14c62480db5867946281d");
     expect(resp.pk.toString("hex")).toEqual(
-      "03e1bd70ae900252c8781608387c2d5aa1876f1cdcbfdc2c2206cbf67e64d8d7aa",
+      "021853d93524119eeb31ab0b06f1dcb068f84943bb230dfa10b1292f47af643575",
     );
     expect(resp.pk.length).toEqual(33);
   });
