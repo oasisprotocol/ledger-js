@@ -87,7 +87,7 @@ describe("Integration", function () {
     const app = new OasisApp(transport);
 
     // Derivation path. First 3 items are automatically hardened!
-    const path = [44, 60, 0];
+    const path = [44, 60, 0, 0, 0];
     const resp = await app.getAddressAndPubKey_secp256k1(path);
 
     console.log(resp);
@@ -109,7 +109,7 @@ describe("Integration", function () {
     const app = new OasisApp(transport);
 
     // Derivation path. First 3 items are automatically hardened!
-    const path = [44, 60, 0];
+    const path = [44, 60, 0, 0, 0];
     const resp = await app.showAddressAndPubKey_secp256k1(path);
 
     console.log(resp);
@@ -123,6 +123,50 @@ describe("Integration", function () {
     expect(resp.hex_address).toEqual("95e5e3c1bdd92cd4a0c14c62480db5867946281d");
     expect(resp.pk.toString("hex")).toEqual(
       "021853d93524119eeb31ab0b06f1dcb068f84943bb230dfa10b1292f47af643575",
+    );
+    expect(resp.pk.length).toEqual(33);
+  });
+
+  test("getAddressAndPubKey_Secp256k1_second_address", async () => {
+    const app = new OasisApp(transport);
+
+    // Derivation path. First 3 items are automatically hardened!
+    const path = [44, 60, 0, 0, 1];
+    const resp = await app.getAddressAndPubKey_secp256k1(path);
+
+    console.log(resp);
+
+    expect(resp.return_code).toEqual(0x9000);
+    expect(resp.error_message).toEqual("No errors");
+
+    expect(resp).toHaveProperty("hex_address");
+    expect(resp).toHaveProperty("pk");
+
+    expect(resp.hex_address).toEqual("a4d577fc4c4a3073553bd25a4e9cb3f1cdace549");
+    expect(resp.pk.toString("hex")).toEqual(
+      "022374f2dacd71042b5a888e3839e4ba54752ad6a51d35b54f6abb899c4329d4bf",
+    );
+    expect(resp.pk.length).toEqual(33);
+  });
+
+  test("showAddressAndPubKey_Secp256k1_second_address", async () => {
+    const app = new OasisApp(transport);
+
+    // Derivation path. First 3 items are automatically hardened!
+    const path = [44, 60, 0, 0, 1];
+    const resp = await app.showAddressAndPubKey_secp256k1(path);
+
+    console.log(resp);
+
+    expect(resp.return_code).toEqual(0x9000);
+    expect(resp.error_message).toEqual("No errors");
+
+    expect(resp).toHaveProperty("hex_address");
+    expect(resp).toHaveProperty("pk");
+
+    expect(resp.hex_address).toEqual("a4d577fc4c4a3073553bd25a4e9cb3f1cdace549");
+    expect(resp.pk.toString("hex")).toEqual(
+      "022374f2dacd71042b5a888e3839e4ba54752ad6a51d35b54f6abb899c4329d4bf",
     );
     expect(resp.pk.length).toEqual(33);
   });

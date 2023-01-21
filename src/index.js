@@ -27,6 +27,8 @@ import {
   P1_VALUES,
 } from "./common";
 
+const HARDENED = 0x80000000;
+
 function processGetAddrEd25519Response(response) {
   const errorCodeData = response.slice(-2);
   const returnCode = errorCodeData[0] * 256 + errorCodeData[1];
@@ -111,6 +113,29 @@ export default class OasisApp {
     }
   }
 
+  /** @param {import('./types').DerivationPath} path */
+  async serializePathBip44(path) {
+    if (!(path instanceof Array)) {
+      throw new Error("Path must be array of numbers");
+    }
+
+    if (path.length !== 5) {
+      throw new Error("Invalid path.");
+    }
+
+    /* eslint no-bitwise: "off", no-plusplus: "off" */
+    const buf = Buffer.alloc(path.length * 4);
+    for (let i = 0; i < path.length; i++) {
+      if (path[i] >= HARDENED) {
+        throw new Error("Incorrect child value (bigger or equal to 0x80000000)");
+      }
+      const value = i < 3 ? (HARDENED | path[i]) >>> 0 : path[i];
+      buf.writeUInt32LE(value, i * 4);
+    }
+
+    return buf;
+  }
+
   static prepareChunks(serializedPathBuffer, context, message) {
     /** @type {Buffer[]} */
     const chunks = [];
@@ -173,7 +198,11 @@ export default class OasisApp {
 
   /** @param {import('./types').DerivationPath} path */
   async signGetChunks(path, context, message, ins) {
-    const serializedPath = await this.serializePath(path);
+    let serializedPath = await this.serializePath(path);
+
+    if (ins === INS.SIGN_PT_SECP256K1) {
+      serializedPath = await this.serializePathBip44(path);
+    }
     // NOTE: serializePath can return an error (not throw, but return an error!)
     // so handle that.
     if ("return_code" in serializedPath && serializedPath.return_code !== 0x9000) {
@@ -182,7 +211,7 @@ export default class OasisApp {
     if (ins === INS.SIGN_ED25519) {
       return OasisApp.prepareChunks(serializedPath, context, message);
     }
-    
+
     return OasisApp.prepareMetaChunks(serializedPath, context, message);
   }
 
@@ -318,9 +347,9 @@ export default class OasisApp {
       .then(processGetAddrEd25519Response, processErrorResponse);
   }
 
-    /** @param {import('./types').DerivationPath} path */
+  /** @param {import('./types').DerivationPath} path */
   async getAddressAndPubKey_secp256k1(path) {
-    const data = await this.serializePath(path);
+    const data = await this.serializePathBip44(path);
     // NOTE: serializePath can return an error (not throw, but return an error!)
     // so handle that.
     if ("return_code" in data && data.return_code !== 0x9000) {
@@ -344,9 +373,9 @@ export default class OasisApp {
       .then(processGetAddrEd25519Response, processErrorResponse);
   }
 
-    /** @param {import('./types').DerivationPath} path */
+  /** @param {import('./types').DerivationPath} path */
   async showAddressAndPubKey_secp256k1(path) {
-    const data = await this.serializePath(path);
+    const data = await this.serializePathBip44(path);
     // NOTE: serializePath can return an error (not throw, but return an error!)
     // so handle that.
     if ("return_code" in data && data.return_code !== 0x9000) {
@@ -412,7 +441,7 @@ export default class OasisApp {
     }, processErrorResponse);
   }
 
-    /**
+  /**
    * @param {import('./types').DerivationPath} path
    * @returns {import('./types').AsyncResponse<{signature: null | Buffer}>}
    */
@@ -452,7 +481,7 @@ export default class OasisApp {
     }, processErrorResponse);
   }
 
-    /**
+  /**
    * @param {import('./types').DerivationPath} path
    * @returns {import('./types').AsyncResponse<{signature: null | Buffer}>}
    */

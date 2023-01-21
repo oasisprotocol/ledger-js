@@ -4,7 +4,11 @@ import { CLA, errorCodeToString, INS, PAYLOAD_TYPE, processErrorResponse } from 
 export function serializePathv1(path) {
   // length 3: ADR 8 derivation path
   // length 5: Legacy derivation path
-  if (!path || (path.length !== 3 && path.length !== 5)) {
+  if (!(path instanceof Array)) {
+    throw new Error("Path must be array of numbers");
+  }
+
+  if (path.length !== 3 && path.length !== 5) {
     throw new Error("Invalid path.");
   }
 
@@ -28,28 +32,26 @@ export async function signSendChunkv1(app, chunkIdx, chunkNum, chunk, ins) {
   if (chunkIdx === chunkNum) {
     payloadType = PAYLOAD_TYPE.LAST;
   }
-  return app.transport
-    .send(CLA, ins, payloadType, 0, chunk, [0x9000, 0x6984, 0x6a80])
-    .then((response) => {
-      const errorCodeData = response.slice(-2);
-      const returnCode = errorCodeData[0] * 256 + errorCodeData[1];
-      let errorMessage = errorCodeToString(returnCode);
+  return app.transport.send(CLA, ins, payloadType, 0, chunk, [0x9000, 0x6984, 0x6a80]).then((response) => {
+    const errorCodeData = response.slice(-2);
+    const returnCode = errorCodeData[0] * 256 + errorCodeData[1];
+    let errorMessage = errorCodeToString(returnCode);
 
-      if (returnCode === 0x6a80 || returnCode === 0x6984) {
-        errorMessage = `${errorMessage} : ${response.slice(0, response.length - 2).toString("ascii")}`;
-      }
+    if (returnCode === 0x6a80 || returnCode === 0x6984) {
+      errorMessage = `${errorMessage} : ${response.slice(0, response.length - 2).toString("ascii")}`;
+    }
 
-      let signature = null;
-      if (response.length > 2) {
-        signature = response.slice(0, response.length - 2);
-      }
+    let signature = null;
+    if (response.length > 2) {
+      signature = response.slice(0, response.length - 2);
+    }
 
-      return {
-        signature,
-        return_code: returnCode,
-        error_message: errorMessage,
-      };
-    }, processErrorResponse);
+    return {
+      signature,
+      return_code: returnCode,
+      error_message: errorMessage,
+    };
+  }, processErrorResponse);
 }
 
 /** @param {import('./types').App} app */
