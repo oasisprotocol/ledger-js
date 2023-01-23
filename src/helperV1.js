@@ -1,5 +1,7 @@
 import { CLA, errorCodeToString, INS, PAYLOAD_TYPE, processErrorResponse } from "./common";
 
+const HARDENED = 0x80000000;
+
 /** @param {import('./types').DerivationPath} path */
 export function serializePathv1(path) {
   // length 3: ADR 8 derivation path
@@ -18,6 +20,29 @@ export function serializePathv1(path) {
     // Harden all path components by ORing them with 0x80000000.
     const hardened = (0x80000000 | path[i]) >>> 0;
     buf.writeUInt32LE(hardened, i * 4);
+  }
+
+  return buf;
+}
+
+/** @param {import('./types').DerivationPath} path */
+export function serializePathBip44v1(path) {
+  if (!(path instanceof Array)) {
+    throw new Error("Path must be array of numbers");
+  }
+
+  if (path.length !== 5) {
+    throw new Error("Invalid path.");
+  }
+
+  /* eslint no-bitwise: "off", no-plusplus: "off" */
+  const buf = Buffer.alloc(path.length * 4);
+  for (let i = 0; i < path.length; i++) {
+    if (path[i] >= HARDENED) {
+      throw new Error("Incorrect child value (bigger or equal to 0x80000000)");
+    }
+    const value = i < 3 ? (HARDENED | path[i]) >>> 0 : path[i];
+    buf.writeUInt32LE(value, i * 4);
   }
 
   return buf;

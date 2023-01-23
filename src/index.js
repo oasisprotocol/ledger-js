@@ -15,7 +15,7 @@
  *  limitations under the License.
  ******************************************************************************* */
 
-import { publicKeyv1, serializePathv1, signSendChunkv1 } from "./helperV1";
+import { publicKeyv1, serializePathBip44v1, serializePathv1, signSendChunkv1 } from "./helperV1";
 import {
   APP_KEY,
   CHUNK_SIZE,
@@ -26,8 +26,6 @@ import {
   processErrorResponse,
   P1_VALUES,
 } from "./common";
-
-const HARDENED = 0x80000000;
 
 function processGetAddrEd25519Response(response) {
   const errorCodeData = response.slice(-2);
@@ -115,25 +113,18 @@ export default class OasisApp {
 
   /** @param {import('./types').DerivationPath} path */
   async serializePathBip44(path) {
-    if (!(path instanceof Array)) {
-      throw new Error("Path must be array of numbers");
+    this.versionResponse = await getVersion(this.transport);
+    switch (this.versionResponse.major) {
+      case 0:
+      case 1:
+      case 2:
+        return serializePathBip44v1(path);
+      default:
+        return {
+          return_code: 0x6400,
+          error_message: "App Version is not supported",
+        };
     }
-
-    if (path.length !== 5) {
-      throw new Error("Invalid path.");
-    }
-
-    /* eslint no-bitwise: "off", no-plusplus: "off" */
-    const buf = Buffer.alloc(path.length * 4);
-    for (let i = 0; i < path.length; i++) {
-      if (path[i] >= HARDENED) {
-        throw new Error("Incorrect child value (bigger or equal to 0x80000000)");
-      }
-      const value = i < 3 ? (HARDENED | path[i]) >>> 0 : path[i];
-      buf.writeUInt32LE(value, i * 4);
-    }
-
-    return buf;
   }
 
   static prepareChunks(serializedPathBuffer, context, message) {
