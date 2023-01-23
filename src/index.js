@@ -84,8 +84,8 @@ export default class OasisApp {
       [
         "getVersion",
         "sign",
-        "signPtEd25519",
-        "signPtSecp256k1",
+        "signRtEd25519",
+        "signRtSecp256k1",
         "getAddressAndPubKey_ed25519",
         "getAddressAndPubKey_secp256k1",
         "appInfo",
@@ -191,7 +191,7 @@ export default class OasisApp {
   async signGetChunks(path, context, message, ins) {
     let serializedPath = await this.serializePath(path);
 
-    if (ins === INS.SIGN_PT_SECP256K1) {
+    if (ins === INS.SIGN_RT_SECP256K1) {
       serializedPath = await this.serializePathBip44(path);
     }
     // NOTE: serializePath can return an error (not throw, but return an error!)
@@ -436,15 +436,15 @@ export default class OasisApp {
    * @param {import('./types').DerivationPath} path
    * @returns {import('./types').AsyncResponse<{signature: null | Buffer}>}
    */
-  async signPtEd25519(path, context, message) {
-    const chunks = await this.signGetChunks(path, context, message, INS.SIGN_PT_ED25519);
+  async signRtEd25519(path, context, message) {
+    const chunks = await this.signGetChunks(path, context, message, INS.SIGN_RT_ED25519);
     // NOTE: signGetChunks can return an error (not throw, but return an error!)
     // so handle that.
     if ("return_code" in chunks && chunks.return_code !== 0x9000) {
       return chunks;
     }
 
-    return this.signSendChunk(1, chunks.length, chunks[0], INS.SIGN_PT_ED25519).then(async (response) => {
+    return this.signSendChunk(1, chunks.length, chunks[0], INS.SIGN_RT_ED25519).then(async (response) => {
       if (response.return_code !== 0x9000) {
         return response;
       }
@@ -457,7 +457,7 @@ export default class OasisApp {
 
       for (let i = 1; i < chunks.length; i += 1) {
         // eslint-disable-next-line no-await-in-loop
-        result = await this.signSendChunk(1 + i, chunks.length, chunks[i], INS.SIGN_PT_ED25519);
+        result = await this.signSendChunk(1 + i, chunks.length, chunks[i], INS.SIGN_RT_ED25519);
         if (result.return_code !== 0x9000) {
           break;
         }
@@ -476,15 +476,15 @@ export default class OasisApp {
    * @param {import('./types').DerivationPath} path
    * @returns {import('./types').AsyncResponse<{signature: null | Buffer}>}
    */
-  async signPtSecp256k1(path, context, message) {
-    const chunks = await this.signGetChunks(path, context, message, INS.SIGN_PT_SECP256K1);
+  async signRtSecp256k1(path, context, message) {
+    const chunks = await this.signGetChunks(path, context, message, INS.SIGN_RT_SECP256K1);
     // NOTE: signGetChunks can return an error (not throw, but return an error!)
     // so handle that.
     if ("return_code" in chunks && chunks.return_code !== 0x9000) {
       return chunks;
     }
 
-    return this.signSendChunk(1, chunks.length, chunks[0], INS.SIGN_PT_SECP256K1).then(async (response) => {
+    return this.signSendChunk(1, chunks.length, chunks[0], INS.SIGN_RT_SECP256K1).then(async (response) => {
       if (response.return_code !== 0x9000) {
         return response;
       }
@@ -497,7 +497,7 @@ export default class OasisApp {
 
       for (let i = 1; i < chunks.length; i += 1) {
         // eslint-disable-next-line no-await-in-loop
-        result = await this.signSendChunk(1 + i, chunks.length, chunks[i], INS.SIGN_PT_SECP256K1);
+        result = await this.signSendChunk(1 + i, chunks.length, chunks[i], INS.SIGN_RT_SECP256K1);
         if (result.return_code !== 0x9000) {
           break;
         }

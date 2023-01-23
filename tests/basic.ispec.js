@@ -243,7 +243,7 @@ describe("Integration", function () {
     expect(valid).toEqual(true);
   });
 
-  test("sign_and_verify_pt_ed25519", async () => {
+  test("sign_and_verify_rt_ed25519", async () => {
     const app = new OasisApp(transport);
     const path = [44, 474, 0, 0, 0];
     const meta = Buffer.from(
@@ -266,7 +266,7 @@ describe("Integration", function () {
     expect(pkResponse.error_message).toEqual("No errors");
 
     // do not wait here..
-    const resp = await app.signPtEd25519(path, meta, txBlob);
+    const resp = await app.signRtEd25519(path, meta, txBlob);
 
     console.log(resp);
 
@@ -282,7 +282,7 @@ describe("Integration", function () {
     expect(valid).toEqual(true);
   });
 
-  test("sign_and_verify_pt_secp256k1", async () => {
+  test("sign_and_verify_rt_secp256k1", async () => {
     const app = new OasisApp(transport);
     const path = [44, 60, 0, 0, 0];
     const meta = Buffer.from(
@@ -305,7 +305,7 @@ describe("Integration", function () {
     expect(pkResponse.error_message).toEqual("No errors");
 
     // do not wait here..
-    const resp = await app.signPtSecp256k1(path, meta, txBlob);
+    const resp = await app.signRtSecp256k1(path, meta, txBlob);
 
     console.log(resp);
 
