@@ -166,16 +166,11 @@ export default class OasisApp {
     // First chunk (only path)
     chunks.push(serializedPathBuffer);
 
-    const MetaSizeBuffer = Buffer.from([meta.length]);
     const MetaBuffer = Buffer.from(meta);
     const messageBuffer = Buffer.from(message);
 
-    if (MetaSizeBuffer.length > 1) {
-      throw new Error("Meta size buffer should be exactly 1 byte");
-    }
-
     // Now split context length + context + message into more chunks
-    const buffer = Buffer.concat([MetaSizeBuffer, MetaBuffer, messageBuffer]);
+    const buffer = Buffer.concat([MetaBuffer, messageBuffer]);
     for (let i = 0; i < buffer.length; i += CHUNK_SIZE) {
       let end = i + CHUNK_SIZE;
       if (i > buffer.length) {

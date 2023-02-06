@@ -341,4 +341,45 @@ describe("Integration", function () {
     expect(responseSign.return_code).toEqual(0x6984);
     expect(responseSign.error_message).toEqual("Data is invalid : Root item should be a map");
   });
+
+  test("sign_and_verify_instantiate_secp256k1", async () => {
+    const app = new OasisApp(transport);
+    const path = [44, 60, 0, 0, 0];
+      const meta = Buffer.from(
+        "ompydW50aW1lX2lkeEAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDBlMmVhYTk5ZmMwMDhmODdmbWNoYWluX2NvbnRleHR4QGIxMWIzNjllMGRhNWJiMjMwYjIyMDEyN2Y1ZTdiMjQyZDM4NWVmOGM2ZjU0OTA2MjQzZjMwYWY2M2M4MTU1MzU=",
+        "base64"
+      );
+
+      const txBlob = Buffer.from(
+        "o2F2AWJhaaJic2mBomVub25jZQBsYWRkcmVzc19zcGVjoWlzaWduYXR1cmWhZ2VkMjU1MTlYIDXD8zVt2FNk/roDVLVFraEJ0b2zi/XWEmgX24xyz9aRY2ZlZaFmYW1vdW50gkBAZGNhbGyiZGJvZHmkZGRhdGFToWlzYXlfaGVsbG+hY3dob2JtZWZ0b2tlbnODgkQ7msoAQIJCB9BEV0JUQ4JDLcbARFdFVEhnY29kZV9pZABvdXBncmFkZXNfcG9saWN5oWhldmVyeW9uZaBmbWV0aG9kdWNvbnRyYWN0cy5JbnN0YW50aWF0ZQ==",
+        "base64"
+      );
+
+      const sigCtx = Buffer.from(
+        "oasis-runtime-sdk/tx: v0 for chain 03e5935652dc03c4a97e07ab2383bfbcc806a6760f872c1782a7ea560f4f7738"
+      );
+
+    const pkResponse = await app.getAddressAndPubKey_secp256k1(path);
+    console.log(pkResponse);
+    expect(pkResponse.return_code).toEqual(0x9000);
+    expect(pkResponse.error_message).toEqual("No errors");
+
+    // do not wait here..
+    const resp = await app.signRtSecp256k1(path, meta, txBlob);
+
+    console.log(resp);
+
+    expect(resp.return_code).toEqual(0x9000);
+    expect(resp.error_message).toEqual("No errors");
+
+    const hasher = sha512.sha512_256.update(sigCtx);
+    hasher.update(txBlob);
+    const msgHash = Buffer.from(hasher.hex(), "hex");
+
+    const signatureRS = Uint8Array.from(resp.signature).slice(0, -1);
+
+    const signatureOk = secp256k1.ecdsaVerify(signatureRS, msgHash, pkResponse.pk);
+    expect(signatureOk).toEqual(true);
+  });
+
 });
