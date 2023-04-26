@@ -47,11 +47,11 @@ function processGetAddrSecp256k1Response(response) {
   const returnCode = errorCodeData[0] * 256 + errorCodeData[1];
 
   const pk = Buffer.from(response.slice(0, 33));
-  const hex_address = Buffer.from(response.slice(33, 73)).toString();
+  const hexAddress = Buffer.from(response.slice(33, 73)).toString();
 
   return {
     pk,
-    hex_address,
+    hex_address: hexAddress,
     return_code: returnCode,
     error_message: errorCodeToString(returnCode),
   };
