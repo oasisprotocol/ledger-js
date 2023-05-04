@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.0.0
+
+Spotlight change:
+
+- Added new methods for ADR14.
+- Fix old tests and add test coverage for new methods
+- Remove deprecated vue example
+
 ## v0.2.3
 
 Spotlight change:

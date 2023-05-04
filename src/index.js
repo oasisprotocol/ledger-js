@@ -15,7 +15,7 @@
  *  limitations under the License.
  ******************************************************************************* */
 
-import { publicKeyv1, serializePathv1, signSendChunkv1 } from "./helperV1";
+import { publicKeyv1, serializePathBip44v1, serializePathv1, signSendChunkv1 } from "./helperV1";
 import {
   APP_KEY,
   CHUNK_SIZE,
@@ -37,6 +37,21 @@ function processGetAddrEd25519Response(response) {
   return {
     bech32_address: bech32Address,
     pk,
+    return_code: returnCode,
+    error_message: errorCodeToString(returnCode),
+  };
+}
+
+function processGetAddrSecp256k1Response(response) {
+  const errorCodeData = response.slice(-2);
+  const returnCode = errorCodeData[0] * 256 + errorCodeData[1];
+
+  const pk = Buffer.from(response.slice(0, 33));
+  const hexAddress = Buffer.from(response.slice(33, 73)).toString();
+
+  return {
+    pk,
+    hex_address: hexAddress,
     return_code: returnCode,
     error_message: errorCodeToString(returnCode),
   };
@@ -66,7 +81,16 @@ export default class OasisApp {
     this.transport = transport;
     transport.decorateAppAPIMethods(
       this,
-      ["getVersion", "sign", "getAddressAndPubKey", "appInfo", "deviceInfo"],
+      [
+        "getVersion",
+        "sign",
+        "signRtEd25519",
+        "signRtSecp256k1",
+        "getAddressAndPubKey_ed25519",
+        "getAddressAndPubKey_secp256k1",
+        "appInfo",
+        "deviceInfo",
+      ],
       scrambleKey,
     );
   }
@@ -79,6 +103,22 @@ export default class OasisApp {
       case 1:
       case 2:
         return serializePathv1(path);
+      default:
+        return {
+          return_code: 0x6400,
+          error_message: "App Version is not supported",
+        };
+    }
+  }
+
+  /** @param {import('./types').DerivationPath} path */
+  async serializePathBip44(path) {
+    this.versionResponse = await getVersion(this.transport);
+    switch (this.versionResponse.major) {
+      case 0:
+      case 1:
+      case 2:
+        return serializePathBip44v1(path);
       default:
         return {
           return_code: 0x6400,
@@ -119,16 +159,46 @@ export default class OasisApp {
     return chunks;
   }
 
+  static prepareMetaChunks(serializedPathBuffer, meta, message) {
+    /** @type {Buffer[]} */
+    const chunks = [];
+
+    // First chunk (only path)
+    chunks.push(serializedPathBuffer);
+
+    const MetaBuffer = Buffer.from(meta);
+    const messageBuffer = Buffer.from(message);
+
+    // Now split context length + context + message into more chunks
+    const buffer = Buffer.concat([MetaBuffer, messageBuffer]);
+    for (let i = 0; i < buffer.length; i += CHUNK_SIZE) {
+      let end = i + CHUNK_SIZE;
+      if (i > buffer.length) {
+        end = buffer.length;
+      }
+      chunks.push(buffer.slice(i, end));
+    }
+
+    return chunks;
+  }
+
   /** @param {import('./types').DerivationPath} path */
-  async signGetChunks(path, context, message) {
-    const serializedPath = await this.serializePath(path);
+  async signGetChunks(path, context, message, ins) {
+    let serializedPath = await this.serializePath(path);
+
+    if (ins === INS.SIGN_RT_SECP256K1) {
+      serializedPath = await this.serializePathBip44(path);
+    }
     // NOTE: serializePath can return an error (not throw, but return an error!)
     // so handle that.
     if ("return_code" in serializedPath && serializedPath.return_code !== 0x9000) {
       return serializedPath;
     }
+    if (ins === INS.SIGN_ED25519) {
+      return OasisApp.prepareChunks(serializedPath, context, message);
+    }
 
-    return OasisApp.prepareChunks(serializedPath, context, message);
+    return OasisApp.prepareMetaChunks(serializedPath, context, message);
   }
 
   async getVersion() {
@@ -251,7 +321,7 @@ export default class OasisApp {
   }
 
   /** @param {import('./types').DerivationPath} path */
-  async getAddressAndPubKey(path) {
+  async getAddressAndPubKey_ed25519(path) {
     const data = await this.serializePath(path);
     // NOTE: serializePath can return an error (not throw, but return an error!)
     // so handle that.
@@ -264,7 +334,20 @@ export default class OasisApp {
   }
 
   /** @param {import('./types').DerivationPath} path */
-  async showAddressAndPubKey(path) {
+  async getAddressAndPubKey_secp256k1(path) {
+    const data = await this.serializePathBip44(path);
+    // NOTE: serializePath can return an error (not throw, but return an error!)
+    // so handle that.
+    if ("return_code" in data && data.return_code !== 0x9000) {
+      return data;
+    }
+    return this.transport
+      .send(CLA, INS.GET_ADDR_SECP256K1, P1_VALUES.ONLY_RETRIEVE, 0, data, [0x9000])
+      .then(processGetAddrSecp256k1Response, processErrorResponse);
+  }
+
+  /** @param {import('./types').DerivationPath} path */
+  async showAddressAndPubKey_ed25519(path) {
     const data = await this.serializePath(path);
     // NOTE: serializePath can return an error (not throw, but return an error!)
     // so handle that.
@@ -276,13 +359,26 @@ export default class OasisApp {
       .then(processGetAddrEd25519Response, processErrorResponse);
   }
 
+  /** @param {import('./types').DerivationPath} path */
+  async showAddressAndPubKey_secp256k1(path) {
+    const data = await this.serializePathBip44(path);
+    // NOTE: serializePath can return an error (not throw, but return an error!)
+    // so handle that.
+    if ("return_code" in data && data.return_code !== 0x9000) {
+      return data;
+    }
+    return this.transport
+      .send(CLA, INS.GET_ADDR_SECP256K1, P1_VALUES.SHOW_ADDRESS_IN_DEVICE, 0, data, [0x9000])
+      .then(processGetAddrSecp256k1Response, processErrorResponse);
+  }
+
   /** @returns {import('./types').AsyncResponse<{signature: null | Buffer}>} */
-  async signSendChunk(chunkIdx, chunkNum, chunk) {
+  async signSendChunk(chunkIdx, chunkNum, chunk, ins) {
     switch (this.versionResponse.major) {
       case 0:
       case 1:
       case 2:
-        return signSendChunkv1(this, chunkIdx, chunkNum, chunk);
+        return signSendChunkv1(this, chunkIdx, chunkNum, chunk, ins);
       default:
         return {
           return_code: 0x6400,
@@ -296,14 +392,14 @@ export default class OasisApp {
    * @returns {import('./types').AsyncResponse<{signature: null | Buffer}>}
    */
   async sign(path, context, message) {
-    const chunks = await this.signGetChunks(path, context, message);
+    const chunks = await this.signGetChunks(path, context, message, INS.SIGN_ED25519);
     // NOTE: signGetChunks can return an error (not throw, but return an error!)
     // so handle that.
     if ("return_code" in chunks && chunks.return_code !== 0x9000) {
       return chunks;
     }
 
-    return this.signSendChunk(1, chunks.length, chunks[0]).then(async (response) => {
+    return this.signSendChunk(1, chunks.length, chunks[0], INS.SIGN_ED25519).then(async (response) => {
       if (response.return_code !== 0x9000) {
         return response;
       }
@@ -316,7 +412,87 @@ export default class OasisApp {
 
       for (let i = 1; i < chunks.length; i += 1) {
         // eslint-disable-next-line no-await-in-loop
-        result = await this.signSendChunk(1 + i, chunks.length, chunks[i]);
+        result = await this.signSendChunk(1 + i, chunks.length, chunks[i], INS.SIGN_ED25519);
+        if (result.return_code !== 0x9000) {
+          break;
+        }
+      }
+
+      return {
+        return_code: result.return_code,
+        error_message: result.error_message,
+        // ///
+        signature: result.signature,
+      };
+    }, processErrorResponse);
+  }
+
+  /**
+   * @param {import('./types').DerivationPath} path
+   * @returns {import('./types').AsyncResponse<{signature: null | Buffer}>}
+   */
+  async signRtEd25519(path, context, message) {
+    const chunks = await this.signGetChunks(path, context, message, INS.SIGN_RT_ED25519);
+    // NOTE: signGetChunks can return an error (not throw, but return an error!)
+    // so handle that.
+    if ("return_code" in chunks && chunks.return_code !== 0x9000) {
+      return chunks;
+    }
+
+    return this.signSendChunk(1, chunks.length, chunks[0], INS.SIGN_RT_ED25519).then(async (response) => {
+      if (response.return_code !== 0x9000) {
+        return response;
+      }
+      let result = {
+        return_code: response.return_code,
+        error_message: response.error_message,
+        /** @type {null | Buffer} */
+        signature: null,
+      };
+
+      for (let i = 1; i < chunks.length; i += 1) {
+        // eslint-disable-next-line no-await-in-loop
+        result = await this.signSendChunk(1 + i, chunks.length, chunks[i], INS.SIGN_RT_ED25519);
+        if (result.return_code !== 0x9000) {
+          break;
+        }
+      }
+
+      return {
+        return_code: result.return_code,
+        error_message: result.error_message,
+        // ///
+        signature: result.signature,
+      };
+    }, processErrorResponse);
+  }
+
+  /**
+   * @param {import('./types').DerivationPath} path
+   * @returns {import('./types').AsyncResponse<{signature: null | Buffer}>}
+   */
+  async signRtSecp256k1(path, context, message) {
+    const chunks = await this.signGetChunks(path, context, message, INS.SIGN_RT_SECP256K1);
+    // NOTE: signGetChunks can return an error (not throw, but return an error!)
+    // so handle that.
+    if ("return_code" in chunks && chunks.return_code !== 0x9000) {
+      return chunks;
+    }
+
+    return this.signSendChunk(1, chunks.length, chunks[0], INS.SIGN_RT_SECP256K1).then(async (response) => {
+      if (response.return_code !== 0x9000) {
+        return response;
+      }
+      let result = {
+        return_code: response.return_code,
+        error_message: response.error_message,
+        /** @type {null | Buffer} */
+        signature: null,
+      };
+
+      for (let i = 1; i < chunks.length; i += 1) {
+        // eslint-disable-next-line no-await-in-loop
+        result = await this.signSendChunk(1 + i, chunks.length, chunks[i], INS.SIGN_RT_SECP256K1);
         if (result.return_code !== 0x9000) {
           break;
         }

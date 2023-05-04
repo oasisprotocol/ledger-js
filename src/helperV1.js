@@ -1,10 +1,16 @@
 import { CLA, errorCodeToString, INS, PAYLOAD_TYPE, processErrorResponse } from "./common";
 
+const HARDENED = 0x80000000;
+
 /** @param {import('./types').DerivationPath} path */
 export function serializePathv1(path) {
   // length 3: ADR 8 derivation path
   // length 5: Legacy derivation path
-  if (!path || (path.length !== 3 && path.length !== 5)) {
+  if (!(path instanceof Array)) {
+    throw new Error("Path must be array of numbers");
+  }
+
+  if (path.length !== 3 && path.length !== 5) {
     throw new Error("Invalid path.");
   }
 
@@ -19,8 +25,31 @@ export function serializePathv1(path) {
   return buf;
 }
 
+/** @param {import('./types').DerivationPath} path */
+export function serializePathBip44v1(path) {
+  if (!(path instanceof Array)) {
+    throw new Error("Path must be array of numbers");
+  }
+
+  if (path.length !== 5) {
+    throw new Error("Invalid path.");
+  }
+
+  /* eslint no-bitwise: "off", no-plusplus: "off" */
+  const buf = Buffer.alloc(path.length * 4);
+  for (let i = 0; i < path.length; i++) {
+    if (path[i] >= HARDENED) {
+      throw new Error("Incorrect child value (bigger or equal to 0x80000000)");
+    }
+    const value = i < 3 ? (HARDENED | path[i]) >>> 0 : path[i];
+    buf.writeUInt32LE(value, i * 4);
+  }
+
+  return buf;
+}
+
 /** @param {import('./types').App} app */
-export async function signSendChunkv1(app, chunkIdx, chunkNum, chunk) {
+export async function signSendChunkv1(app, chunkIdx, chunkNum, chunk, ins) {
   let payloadType = PAYLOAD_TYPE.ADD;
   if (chunkIdx === 1) {
     payloadType = PAYLOAD_TYPE.INIT;
@@ -28,28 +57,26 @@ export async function signSendChunkv1(app, chunkIdx, chunkNum, chunk) {
   if (chunkIdx === chunkNum) {
     payloadType = PAYLOAD_TYPE.LAST;
   }
-  return app.transport
-    .send(CLA, INS.SIGN_ED25519, payloadType, 0, chunk, [0x9000, 0x6984, 0x6a80])
-    .then((response) => {
-      const errorCodeData = response.slice(-2);
-      const returnCode = errorCodeData[0] * 256 + errorCodeData[1];
-      let errorMessage = errorCodeToString(returnCode);
+  return app.transport.send(CLA, ins, payloadType, 0, chunk, [0x9000, 0x6984, 0x6a80]).then((response) => {
+    const errorCodeData = response.slice(-2);
+    const returnCode = errorCodeData[0] * 256 + errorCodeData[1];
+    let errorMessage = errorCodeToString(returnCode);
 
-      if (returnCode === 0x6a80 || returnCode === 0x6984) {
-        errorMessage = `${errorMessage} : ${response.slice(0, response.length - 2).toString("ascii")}`;
-      }
+    if (returnCode === 0x6a80 || returnCode === 0x6984) {
+      errorMessage = `${errorMessage} : ${response.slice(0, response.length - 2).toString("ascii")}`;
+    }
 
-      let signature = null;
-      if (response.length > 2) {
-        signature = response.slice(0, response.length - 2);
-      }
+    let signature = null;
+    if (response.length > 2) {
+      signature = response.slice(0, response.length - 2);
+    }
 
-      return {
-        signature,
-        return_code: returnCode,
-        error_message: errorMessage,
-      };
-    }, processErrorResponse);
+    return {
+      signature,
+      return_code: returnCode,
+      error_message: errorMessage,
+    };
+  }, processErrorResponse);
 }
 
 /** @param {import('./types').App} app */

@@ -12,6 +12,4 @@ This package provides a basic client library to communicate with the Oasis apps 
 
 We recommend using the npmjs package in order to receive updates/fixes.
 
-This repo also includes a simple Vue example for WebUSB.
-
 ![Example](docs/example.png)

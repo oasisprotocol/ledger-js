@@ -6,6 +6,9 @@ export const INS = {
   GET_VERSION: 0x00,
   GET_ADDR_ED25519: 0x01,
   SIGN_ED25519: 0x02,
+  GET_ADDR_SECP256K1: 0x04,
+  SIGN_RT_ED25519: 0x05,
+  SIGN_RT_SECP256K1: 0x07,
 };
 
 export const DEFAULT_HRP = "oasis";

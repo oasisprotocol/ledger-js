@@ -46,8 +46,3 @@ jobs:
       - name: Run tests
         run: |
           yarn test:unit
-
-      - name: Build example
-        run: |
-          OPENSSL_CONF=certs/openssl.cnf yarn certificate
-          yarn build-example
