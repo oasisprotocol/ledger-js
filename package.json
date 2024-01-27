@@ -40,7 +40,7 @@
     "@ledgerhq/hw-transport-webusb": "^6.1.0",
     "@ledgerhq/logs": "^6.0.2",
     "babel-jest": "^29.0.3",
-    "buffer": "^5.5.0",
+    "buffer": "^6.0.3",
     "core-js": "^3.4.8",
     "ed25519-supercop": "^2.0.1",
     "eslint": "^8.10.0",
