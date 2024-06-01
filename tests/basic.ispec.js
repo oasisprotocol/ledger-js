@@ -6,6 +6,7 @@ import OasisApp from "../src/index";
 const ed25519 = require("ed25519-supercop");
 const secp256k1 = require("secp256k1/elliptic");
 const sha512 = require("js-sha512");
+const addon = require("../tests_tools/neon/native");
 
 let transport = {};
 jest.setTimeout(120000);
@@ -169,6 +170,44 @@ describe("Integration", function () {
       "022374f2dacd71042b5a888e3839e4ba54752ad6a51d35b54f6abb899c4329d4bf",
     );
     expect(resp.pk.length).toEqual(33);
+  });
+
+  test("getAddressAndPubKey_Sr25519", async () => {
+    const app = new OasisApp(transport);
+
+    // Derivation path. First 3 items are automatically hardened!
+    const path = [44, 474, 0, 0, 0];
+    const resp = await app.getAddressAndPubKey_sr25519(path);
+
+    console.log(resp);
+
+    expect(resp.return_code).toEqual(0x9000);
+    expect(resp.error_message).toEqual("No errors");
+
+    expect(resp).toHaveProperty("bech32_address");
+    expect(resp).toHaveProperty("pk");
+
+    expect(resp.bech32_address).toEqual("oasis1qp3hdxy5fy4hqsh0qtrugxcaks6eum320cerzfqm");
+    expect(resp.pk.length).toEqual(32);
+  });
+
+  test("showAddressAndPubKey_Sr25519", async () => {
+    const app = new OasisApp(transport);
+
+    // Derivation path. First 3 items are automatically hardened!
+    const path = [44, 474, 0, 0, 0];
+    const resp = await app.showAddressAndPubKey_sr25519(path);
+
+    console.log(resp);
+
+    expect(resp.return_code).toEqual(0x9000);
+    expect(resp.error_message).toEqual("No errors");
+
+    expect(resp).toHaveProperty("bech32_address");
+    expect(resp).toHaveProperty("pk");
+
+    expect(resp.bech32_address).toEqual("oasis1qp3hdxy5fy4hqsh0qtrugxcaks6eum320cerzfqm");
+    expect(resp.pk.length).toEqual(32);
   });
 
   test("appInfo", async () => {
@@ -345,19 +384,19 @@ describe("Integration", function () {
   test("sign_and_verify_instantiate_secp256k1", async () => {
     const app = new OasisApp(transport);
     const path = [44, 60, 0, 0, 0];
-      const meta = Buffer.from(
-        "ompydW50aW1lX2lkeEAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDBlMmVhYTk5ZmMwMDhmODdmbWNoYWluX2NvbnRleHR4QGIxMWIzNjllMGRhNWJiMjMwYjIyMDEyN2Y1ZTdiMjQyZDM4NWVmOGM2ZjU0OTA2MjQzZjMwYWY2M2M4MTU1MzU=",
-        "base64"
-      );
+    const meta = Buffer.from(
+      "ompydW50aW1lX2lkeEAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDBlMmVhYTk5ZmMwMDhmODdmbWNoYWluX2NvbnRleHR4QGIxMWIzNjllMGRhNWJiMjMwYjIyMDEyN2Y1ZTdiMjQyZDM4NWVmOGM2ZjU0OTA2MjQzZjMwYWY2M2M4MTU1MzU=",
+      "base64",
+    );
 
-      const txBlob = Buffer.from(
-        "o2F2AWJhaaJic2mBomVub25jZQBsYWRkcmVzc19zcGVjoWlzaWduYXR1cmWhZ2VkMjU1MTlYIDXD8zVt2FNk/roDVLVFraEJ0b2zi/XWEmgX24xyz9aRY2ZlZaFmYW1vdW50gkBAZGNhbGyiZGJvZHmkZGRhdGFToWlzYXlfaGVsbG+hY3dob2JtZWZ0b2tlbnODgkQ7msoAQIJCB9BEV0JUQ4JDLcbARFdFVEhnY29kZV9pZABvdXBncmFkZXNfcG9saWN5oWhldmVyeW9uZaBmbWV0aG9kdWNvbnRyYWN0cy5JbnN0YW50aWF0ZQ==",
-        "base64"
-      );
+    const txBlob = Buffer.from(
+      "o2F2AWJhaaJic2mBomVub25jZQBsYWRkcmVzc19zcGVjoWlzaWduYXR1cmWhZ2VkMjU1MTlYIDXD8zVt2FNk/roDVLVFraEJ0b2zi/XWEmgX24xyz9aRY2ZlZaFmYW1vdW50gkBAZGNhbGyiZGJvZHmkZGRhdGFToWlzYXlfaGVsbG+hY3dob2JtZWZ0b2tlbnODgkQ7msoAQIJCB9BEV0JUQ4JDLcbARFdFVEhnY29kZV9pZABvdXBncmFkZXNfcG9saWN5oWhldmVyeW9uZaBmbWV0aG9kdWNvbnRyYWN0cy5JbnN0YW50aWF0ZQ==",
+      "base64",
+    );
 
-      const sigCtx = Buffer.from(
-        "oasis-runtime-sdk/tx: v0 for chain 03e5935652dc03c4a97e07ab2383bfbcc806a6760f872c1782a7ea560f4f7738"
-      );
+    const sigCtx = Buffer.from(
+      "oasis-runtime-sdk/tx: v0 for chain 03e5935652dc03c4a97e07ab2383bfbcc806a6760f872c1782a7ea560f4f7738",
+    );
 
     const pkResponse = await app.getAddressAndPubKey_secp256k1(path);
     console.log(pkResponse);
@@ -382,4 +421,41 @@ describe("Integration", function () {
     expect(signatureOk).toEqual(true);
   });
 
+  test("sign_and_verify_sr25519", async () => {
+    const app = new OasisApp(transport);
+    const path = [44, 474, 0, 0, 0];
+    const meta = Buffer.from(
+      "ompydW50aW1lX2lkeEAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDBlMmVhYTk5ZmMwMDhmODdmbWNoYWluX2NvbnRleHR4QGIxMWIzNjllMGRhNWJiMjMwYjIyMDEyN2Y1ZTdiMjQyZDM4NWVmOGM2ZjU0OTA2MjQzZjMwYWY2M2M4MTU1MzU=",
+      "base64",
+    );
+
+    const txBlob = Buffer.from(
+      "o2F2AWJhaaJic2mBomVub25jZQBsYWRkcmVzc19zcGVjoWlzaWduYXR1cmWhZ2VkMjU1MTlYIDXD8zVt2FNk/roDVLVFraEJ0b2zi/XWEmgX24xyz9aRY2ZlZaFmYW1vdW50gkBAZGNhbGyiZGJvZHmkZGRhdGFToWlzYXlfaGVsbG+hY3dob2JtZWZ0b2tlbnODgkQ7msoAQIJCB9BEV0JUQ4JDLcbARFdFVEhnY29kZV9pZABvdXBncmFkZXNfcG9saWN5oWhldmVyeW9uZaBmbWV0aG9kdWNvbnRyYWN0cy5JbnN0YW50aWF0ZQ==",
+      "base64",
+    );
+
+    const sigCtx = Buffer.from(
+      "oasis-runtime-sdk/tx: v0 for chain 03e5935652dc03c4a97e07ab2383bfbcc806a6760f872c1782a7ea560f4f7738",
+    );
+
+    const pkResponse = await app.getAddressAndPubKey_sr25519(path);
+    console.log(pkResponse);
+    expect(pkResponse.return_code).toEqual(0x9000);
+    expect(pkResponse.error_message).toEqual("No errors");
+
+    // do not wait here..
+    const resp = await app.signRtSr25519(path, meta, txBlob);
+
+    console.log(resp);
+
+    expect(resp.return_code).toEqual(0x9000);
+    expect(resp.error_message).toEqual("No errors");
+
+    const hasher = sha512.sha512_256.update(txBlob);
+    const msgHash = Buffer.from(hasher.hex(), "hex");
+
+    //Now verify the signature
+    const valid = addon.schnorrkel_verify(pkResponse.pk, sigCtx, msgHash, resp.signature);
+    expect(valid).toEqual(true);
+  });
 });

@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.0.1
+
+Spotlight change:
+
+- Add support for Sr25519 signatures
+
 ## v1.0.0
 
 Spotlight change:
