@@ -12,4 +12,9 @@ This package provides a basic client library to communicate with the Oasis apps 
 
 We recommend using the npmjs package in order to receive updates/fixes.
 
+For running integration tests compile tests_tools with:
+
+    cd tests_tools/neon
+    yarn install
+
 ![Example](docs/example.png)

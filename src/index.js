@@ -57,6 +57,21 @@ function processGetAddrSecp256k1Response(response) {
   };
 }
 
+function processGetAddrSr25519Response(response) {
+  const errorCodeData = response.slice(-2);
+  const returnCode = errorCodeData[0] * 256 + errorCodeData[1];
+
+  const pk = Buffer.from(response.slice(0, 32));
+  const bech32Address = Buffer.from(response.slice(32, -2)).toString();
+
+  return {
+    bech32_address: bech32Address,
+    pk,
+    return_code: returnCode,
+    error_message: errorCodeToString(returnCode),
+  };
+}
+
 /**
  * @template T
  * @param {import('./types').Response<T>} response
@@ -347,6 +362,16 @@ export default class OasisApp {
   }
 
   /** @param {import('./types').DerivationPath} path */
+  async getAddressAndPubKey_sr25519(path) {
+    const data = await this.serializePath(path);
+    // NOTE: serializePath can return an error (not throw, but return an error!)
+    // so handle that.
+    return this.transport
+      .send(CLA, INS.GET_ADDR_SR25519, P1_VALUES.ONLY_RETRIEVE, 0, data, [0x9000])
+      .then(processGetAddrSr25519Response, processErrorResponse);
+  }
+
+  /** @param {import('./types').DerivationPath} path */
   async showAddressAndPubKey_ed25519(path) {
     const data = await this.serializePath(path);
     // NOTE: serializePath can return an error (not throw, but return an error!)
@@ -370,6 +395,16 @@ export default class OasisApp {
     return this.transport
       .send(CLA, INS.GET_ADDR_SECP256K1, P1_VALUES.SHOW_ADDRESS_IN_DEVICE, 0, data, [0x9000])
       .then(processGetAddrSecp256k1Response, processErrorResponse);
+  }
+
+  /** @param {import('./types').DerivationPath} path */
+  async showAddressAndPubKey_sr25519(path) {
+    const data = await this.serializePath(path);
+    // NOTE: serializePath can return an error (not throw, but return an error!)
+    // so handle that.
+    return this.transport
+      .send(CLA, INS.GET_ADDR_SR25519, P1_VALUES.SHOW_ADDRESS_IN_DEVICE, 0, data, [0x9000])
+      .then(processGetAddrSr25519Response, processErrorResponse);
   }
 
   /** @returns {import('./types').AsyncResponse<{signature: null | Buffer}>} */
@@ -493,6 +528,37 @@ export default class OasisApp {
       for (let i = 1; i < chunks.length; i += 1) {
         // eslint-disable-next-line no-await-in-loop
         result = await this.signSendChunk(1 + i, chunks.length, chunks[i], INS.SIGN_RT_SECP256K1);
+        if (result.return_code !== 0x9000) {
+          break;
+        }
+      }
+
+      return {
+        return_code: result.return_code,
+        error_message: result.error_message,
+        // ///
+        signature: result.signature,
+      };
+    }, processErrorResponse);
+  }
+
+  /**
+   * @param {import('./types').DerivationPath} path
+   * @returns {import('./types').AsyncResponse<{signature: null | Buffer}>}
+   */
+  async signRtSr25519(path, meta, message) {
+    const chunks = await this.signGetChunks(path, meta, message, INS.SIGN_RT_SR25519);
+
+    return this.signSendChunk(1, chunks.length, chunks[0], INS.SIGN_RT_SR25519).then(async (response) => {
+      let result = {
+        return_code: response.return_code,
+        error_message: response.error_message,
+        signature: null,
+      };
+
+      for (let i = 1; i < chunks.length; i += 1) {
+        // eslint-disable-next-line no-await-in-loop
+        result = await this.signSendChunk(1 + i, chunks.length, chunks[i], INS.SIGN_RT_SR25519);
         if (result.return_code !== 0x9000) {
           break;
         }
