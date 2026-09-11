@@ -1,8 +1,29 @@
-import type Transport from "@ledgerhq/hw-transport";
+/**
+ * The transport surface this package needs in order to talk to a device.
+ *
+ * Deliberately structural rather than a nominal dependency on `Transport` from
+ * `@ledgerhq/hw-transport`: `OasisApp` calls `send` and `decorateAppAPIMethods`, so
+ * describing those methods lets it accept either a legacy `Transport` or a
+ * `DMKTransport` built on Ledger's Device Management Kit, which replaces hw-transport
+ * ahead of the September 2026 cutoff.
+ *
+ * A `Transport` instance satisfies this interface as-is, so this is a widening: every
+ * existing caller keeps compiling unchanged.
+ */
+export interface Transport {
+  send: (
+    cla: number,
+    ins: number,
+    p1: number,
+    p2: number,
+    data?: Buffer,
+    statusList?: number[],
+    options?: { abortTimeoutMs?: number },
+  ) => Promise<Buffer>;
+  decorateAppAPIMethods: (self: Record<string, any>, methods: string[], scrambleKey: string) => void;
+}
 
-export type { Transport };
-
-// @ledgerhq/hw-transport has an awful TransportStatusError type
+// Ledger transports throw this shape; keep it local so we do not depend on hw-transport types.
 export interface TransportStatusError extends Error {
   statusCode: number;
   statusText: "UNKNOWN_ERROR";
