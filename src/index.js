@@ -68,8 +68,16 @@ export function successOrThrow(response) {
   return /** @type { T } */ (response);
 }
 
+/**
+ * Generic in the transport so `app.transport` keeps the caller's own type rather than
+ * collapsing to the structural one. Construct with a hw-transport `Transport` and
+ * `app.transport.close()` still typechecks, because `T` is inferred as that class; pass
+ * a DMK transport and its own members survive the same way.
+ *
+ * @template {import('./types').LedgerTransport} [T=import('./types').LedgerTransport]
+ */
 export default class OasisApp {
-  /** @param {import('./types').Transport} transport */
+  /** @param {T} transport */
   constructor(transport, scrambleKey = APP_KEY) {
     if (!transport) {
       throw new Error("Transport has not been defined");
