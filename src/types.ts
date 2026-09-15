@@ -7,6 +7,10 @@
  * `DMKTransport` built on Ledger's Device Management Kit, which replaces hw-transport
  * ahead of the September 2026 cutoff. A hw-transport `Transport` satisfies it as-is,
  * and describing it here is what lets that package leave our dependencies entirely.
+ *
+ * Passing anything other than a `DMKTransport` is deprecated, though: `OasisApp`'s
+ * constructor marks that overload `@deprecated` and logs a one-time warning, and the next
+ * major accepts only `DMKTransport`.
  */
 export interface LedgerTransport {
   send: (
@@ -65,7 +69,12 @@ export type AsyncResponse<T> = Promise<Response<T>>;
 async function typeOnlyTest() {
   const { default: OasisApp, successOrThrow } = await import('./index');
   const { default: TransportWebUSB } = await import('@ledgerhq/hw-transport-webusb');
-  const app = new OasisApp(await TransportWebUSB.create());
+  const transport = await TransportWebUSB.create();
+  // Cast: against the JS source, the construct signatures TypeScript builds from JSDoc
+  // `@overload` constructors do not carry the class template, so no transport type can bind `T`
+  // here. This check is about the methods' response types, which do not depend on `T`. The
+  // emitted dist/index.d.ts is plain TypeScript and infers `T` from the argument as usual.
+  const app = new OasisApp(transport as any);
   console.log(successOrThrow(await app.getVersion()).major.toFixed());
   console.log(successOrThrow(await app.appInfo()).appName.trim());
   console.log(successOrThrow(await app.deviceInfo()).mcuVersion.trim());
