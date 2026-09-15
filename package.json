@@ -27,7 +27,7 @@
   "homepage": "https://github.com/oasisprotocol/ledger-js",
   "dependencies": {
     "@babel/runtime": "^7.9.2",
-    "@ledgerhq/hw-transport": "^6.1.0"
+    "@zondax/ledger-js": "^2.1.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.11.6",

@@ -15,7 +15,9 @@
  *  limitations under the License.
  ******************************************************************************* */
 
+import { DMKTransport } from "@zondax/ledger-js";
 import { publicKeyv1, serializePathBip44v1, serializePathv1, signSendChunkv1 } from "./helperV1";
+import { warnLegacyTransport } from "./deprecation";
 import {
   APP_KEY,
   CHUNK_SIZE,
@@ -68,11 +70,50 @@ export function successOrThrow(response) {
   return /** @type { T } */ (response);
 }
 
+/**
+ * Generic in the transport so `app.transport` keeps the caller's own type rather than
+ * collapsing to the structural one. Construct with a hw-transport `Transport` and
+ * `app.transport.close()` still typechecks, because `T` is inferred as that class; pass
+ * a DMK transport and its own members survive the same way.
+ *
+ * @template {import('./types').LedgerTransport} [T=import('./types').LedgerTransport]
+ */
 export default class OasisApp {
-  /** @param {import('./types').Transport} transport */
+  /**
+   * Constructs the app over a Device Management Kit session.
+   *
+   * @overload
+   * @param {T extends import("@zondax/ledger-js").DMKTransport ? T : never} transport A `DMKTransport` from
+   *   `@zondax/ledger-js`, bound to a connected DMK session.
+   * @param {string} [scrambleKey]
+   */
+  /**
+   * Constructs the app over any transport that can send an APDU.
+   *
+   * @deprecated Pass a `DMKTransport` from `@zondax/ledger-js` instead. Ledger deprecated
+   * `@ledgerhq/hw-transport` in favour of the Device Management Kit, and this overload -- which
+   * also admits hand-rolled transports -- is removed in the next major version. Using it logs a
+   * one-time warning.
+   *
+   * `DMKTransport` has private members, so only a real instance selects the overload above: an
+   * hw-transport `Transport` or a plain object implementing the two methods lands here.
+   *
+   * @overload
+   * @param {T} transport
+   * @param {string} [scrambleKey]
+   */
+  /**
+   * @param {T} transport
+   * @param {string} [scrambleKey]
+   */
   constructor(transport, scrambleKey = APP_KEY) {
     if (!transport) {
       throw new Error("Transport has not been defined");
+    }
+    // A deprecation notice, not a security check: a structural or cross-copy transport can
+    // defeat instanceof, and the transport runs in the caller's own process anyway.
+    if (!(transport instanceof DMKTransport)) {
+      warnLegacyTransport();
     }
 
     /** @type {Awaited<ReturnType<typeof getVersion>>} */

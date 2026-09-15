@@ -1681,7 +1681,7 @@
     "@ledgerhq/hw-transport" "^6.30.6"
     "@ledgerhq/logs" "^6.12.0"
 
-"@ledgerhq/hw-transport@^6.1.0", "@ledgerhq/hw-transport@^6.30.6", "@ledgerhq/hw-transport@^6.31.4":
+"@ledgerhq/hw-transport@^6.30.6", "@ledgerhq/hw-transport@^6.31.4":
   version "6.31.4"
   resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport/-/hw-transport-6.31.4.tgz#9b23a6de4a4caaa5c24b149c2dea8adde46f0eb1"
   integrity sha512-6c1ir/cXWJm5dCWdq55NPgCJ3UuKuuxRvf//Xs36Bq9BwkV2YaRQhZITAkads83l07NAdR16hkTWqqpwFMaI6A==
@@ -1903,6 +1903,11 @@
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@ungap/structured-clone/-/structured-clone-1.2.0.tgz#756641adb587851b5ccb3e095daf27ae581c8406"
   integrity sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==
+
+"@zondax/ledger-js@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@zondax/ledger-js/-/ledger-js-2.1.0.tgz#8da389903789578e0b70354ff6037b97b3db4093"
+  integrity sha512-tFaaJOtbfanOXCPDihTtLE0NfIXuovUrKjAPYgomKGtmhO0ftCp8mdrQNaUuygRFDK5UbNSidtx5hdAJk+sthQ==
 
 acorn-jsx@^5.3.2:
   version "5.3.2"
